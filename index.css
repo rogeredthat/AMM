@@ -1,0 +1,10 @@
+body
+{
+    margin:0;
+}
+#now_playing
+{
+    width: 100vw;
+    height: 100vh;
+    background:#000;
+}
