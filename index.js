@@ -23,13 +23,14 @@ $('input').keydown(function (e) {
 
 //Visualization
 var volChange = 0;
-var baseColor = 43;
+var baseColor = 243;
 var flyout = false;
 
 var nowPlaying = document.getElementById('now_playing');
 var canvas = document.getElementById('canvas');
 var palette = document.getElementById('palette');
 var audio = document.querySelectorAll('audio')[0];
+var infoflow = document.getElementById('infoflow');
 var ctx = canvas.getContext('2d');
 var avg = 0;
 var visual = {
@@ -41,7 +42,10 @@ canvas.height = visual.h;
 var playerRad = ((visual.w > visual.h) ? visual.h : visual.w) / 4;
 var AimedRad = playerRad;
 var CurrentRad = playerRad;
+var hairoffset = 10;
 
+//global information variables
+var gcursong = "Finale";
 
 function ResizeCanvas() {
     visual.w = nowPlaying.offsetWidth;
@@ -51,10 +55,12 @@ function ResizeCanvas() {
     playerRad = ((visual.w > visual.h) ? visual.h : visual.w) / 4;
 }
 var wafer = 0;
+var framecount = 0;
 var context = new AudioContext();
 var analyser = context.createAnalyser();
 var gainNode = context.createGain();
 var buffer = context.createMediaElementSource(audio);
+
 spectrum = []
     , currentPoints = [];
 deg = Math.PI / 128;
@@ -70,12 +76,15 @@ for (i = 0; i < 256; i++) {
     });
 }
 
-
 function playMySong(songTitle) {
+    audio.src = "landing.audio/" + songTitle;
+}
+
+function Init(songTitle) {
+    ctx.lineWidth = 1;
     audio.src = "landing.audio/" + songTitle;
     buffer.connect(gainNode);
     gainNode.connect(analyser);
-    playIcon.style.display = 'block';
     analyser.connect(context.destination);
     analyser.fftSize = 256;
     var bufferLength = analyser.frequencyBinCount;
@@ -94,23 +103,27 @@ function playMySong(songTitle) {
         avg /= 30;
         AimedRad = 40 + (playerRad + avg) * gainNode.gain.value;
         window.requestAnimationFrame(visualize);
+        ctx.lineWidth = 1.5;
         if (volChange--) {
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "hsla(" + baseColor + "100%,60%)";
-            ctx.globalAlpha = Math.min(0.2, 1 - (volChange / 1000));
+            ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
         }
-        CurrentRad += (AimedRad - CurrentRad) / 5;
+        ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)"
+        CurrentRad += (AimedRad - CurrentRad) / 10;
         ctx.beginPath();
         ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, 0, 2 * Math.PI);
         ctx.closePath();
+        ctx.globalAlpha = 1;
+        ctx.fill();
         ctx.stroke();
         for (i = 0; i < spectrum.length / 2; i++) {
-            spectrum[i].x = (CurrentRad + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
+            spectrum[i].x = (CurrentRad*1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
+            spectrum[i].y = (CurrentRad*1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
+            //spectrum[i].y = Math.min(spectrum[i].y,30);
         }
         for (i = spectrum.length / 2; i < spectrum.length; i++) {
-            spectrum[i].x = (CurrentRad + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
+            spectrum[i].x = (CurrentRad*1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
+            spectrum[i].y = (CurrentRad*1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
+            //spectrum[i].y = Math.min(spectrum[i].y,30);
         }
     };
     visualize();
@@ -120,74 +133,63 @@ function playMySong(songTitle) {
 
 function draw() {
     window.requestAnimationFrame(draw);
+    //hairoffset = Math.cos(avg / 100) * 10;
     ResizeCanvas();
     volChange = Math.max(volChange - 1, 0);
     phase += (0.005 + (0.001 * (avg / 50)));
-    ctx.clearRect(0, 0, visual.w, visual.h);
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = 1.5;
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.globalAlpha = 0.75;
+    ctx.fillRect(0, 0, visual.w, visual.h);
+    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+    ctx.globalAlpha = 0.5;
+    //ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     for (i = 0; i < currentPoints.length; i++) {
         currentPoints[i].x += (spectrum[i].x - currentPoints[i].x) / 10;
         currentPoints[i].y += (spectrum[i].y - currentPoints[i].y) / 10;
     }
 
+    ctx.moveTo((visual.w / 2) + currentPoints[0].x, (visual.h / 2) + currentPoints[0].y);
+
+    for (i = 1; i < 256 * (audio.currentTime / audio.duration); i++) {
+        ctx.lineTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+    }
+    ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo((visual.w / 2) + currentPoints[0].x, (visual.h / 2) + currentPoints[0].y)
-    for (i = 1; i < currentPoints.length; i++) {
+    ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+    for (i = Math.floor(256 * (audio.currentTime / audio.duration)); i < currentPoints.length; i++) {
         ctx.lineTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
     }
     ctx.lineTo((visual.w / 2) + currentPoints[0].x, (visual.h / 2) + currentPoints[0].y);
-    ctx.closePath();
     ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
     ctx.stroke();
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.1;
+    ctx.globalAlpha = 0.2;
     for (i = 0; i < currentPoints.length; i++) {
-        j = (i + 10 < currentPoints.length ? i + 10 : i + 10 - currentPoints.length);
-        ctx.beginPath();
-        //for seeker
-        if (i < 256 * (audio.currentTime / audio.duration)) {
-            ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-        } else {
-            ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
-        }
-        //for volume
-        /*else if (i < gainNode.gain.value * 256 && wafer > 0) {
-            var factor = wafer / 40000;
-            var returncolor;
-            if (i < 256 * (buffer.context.currentTime / 250)) {
-                returncolor = seekcolor;
+        if (i % 1 == 0) {
+            j = ((i + hairoffset) + 256) % 256;
+            ctx.beginPath();
+            //for seeker
+            if (i < (len=256 * (audio.currentTime / audio.duration))) {
+                ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+                ctx.globalAlpha = 0.4;
+                /*ctx.lineWidth = (1-Math.abs(((len/2)-i)/(len/2)))*(CurrentRad/25)+1.5;*/
+                ctx.lineWidth=1.5;
+                ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+            ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * j + phase));
+            ctx.closePath();
+            ctx.stroke();
             } else {
-                returncolor = basecolor
+                ctx.globalAlpha = 0.2;
+                ctx.lineWidth=1.5;
+                ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
+                ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+            ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * j + phase));
+            ctx.closePath();
+            ctx.stroke();
             }
-            ctx.strokeStyle = getrgbcolor(mergecolor(volcolor, returncolor, factor));
-            wafer--;
+            
         }
-        else if (i > gainNode.gain.value * 256 && wafer > 0) {
-            var factor = wafer / 40000;
-            var returncolor;
-            if (i < 256 * (buffer.context.currentTime / 250)) {
-                returncolor = seekcolor;
-            } else {
-                returncolor = basecolor
-            }
-            ctx.strokeStyle = getrgbcolor(mergecolor(basecolor, returncolor, factor));
-            wafer--;
-        }
-        else {
-            ctx.strokeStyle = getrgbcolor(basecolor);
-        }*/
-        ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-        ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
-        ctx.closePath();
-        ctx.stroke();
     }
-    ctx.globalAlpha = 0.4;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(visual.w / 2, visual.h / 2, AimedRad, 0, 2 * Math.PI);
-    ctx.closePath();
-    //    ctx.stroke();
 
 
 }
@@ -215,7 +217,7 @@ $('#playlist_toggle').click(function () {
     }
 });
 
-$("[tabindex]").blur(function(){
+$("[tabindex]").blur(function () {
     $('#sideControls>li').removeClass('active');
     $(this).removeClass('active');
     $('#deafNet').hide();
@@ -240,6 +242,7 @@ $('#playlist>.list>li').dblclick(function () {
     playMySong($(this).attr("name"));
     $('#playlist>.list>li').removeClass('active');
     $(this).addClass('active');
+    gcursong = $(this).html();
 });
 
 shortcut.add("p", function (e) {
@@ -258,11 +261,14 @@ shortcut.add("right", function () {
 });
 
 shortcut.add("Shift+right", function () {
-    $('#player').addClass('active');
-    $('#playlist').removeClass('active');
-    $('#search_wrapper').removeClass('active');
-    $('#sideControls>li').removeClass('active');
-    searchInput.focus();
+    audio.currentTime += 3;
+}, {
+    'type': 'keydown'
+    , 'disable_in_input': false
+});
+
+shortcut.add("Shift+left", function () {
+    audio.currentTime -= 3;
 }, {
     'type': 'keydown'
     , 'disable_in_input': false
@@ -286,9 +292,30 @@ shortcut.add("Ctrl+Up", function () {
     , 'disable_in_input': false
 });
 
-shortcut.add("Shift+left", function () {
-    $('#player').removeClass('active');
-    searchInput.blur();
+shortcut.add("Esc", function () {
+    $('#player').toggleClass('active');
+    if ($('#player').hasClass('active')) {
+        $('#playlist').removeClass('active');
+        $('#search_wrapper').removeClass('active');
+        $('#sideControls>li').removeClass('active');
+        searchInput.focus();
+    } else {
+        searchInput.blur();
+    }
+}, {
+    'type': 'keydown'
+    , 'disable_in_input': true
+});
+
+shortcut.add("Ctrl+Shift+Right", function () {
+    nextSong();
+}, {
+    'type': 'keydown'
+    , 'disable_in_input': false
+});
+
+shortcut.add("Ctrl+Shift+left", function () {
+    prevSong();
 }, {
     'type': 'keydown'
     , 'disable_in_input': false
@@ -313,34 +340,59 @@ var playIcon = document.getElementById("playIcon");
 var pauseIcon = document.getElementById("pauseIcon");
 //play_pause n shit
 nowPlaying.getElementsByClassName('overlay')[0].onclick = function () {
-     playPause();
+    playPause();
 }
 
 function playPause() {
     if ($(canvas).hasClass('active')) {
         audio.pause();
         $(canvas).removeClass('active');
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
     } else {
         audio.play();
         $(canvas).addClass('active');
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
     }
 }
 
-audio.onended = function () {
-    $elem = $('#playlist>.list>li.active').next();
-    $url = $elem.attr("name");
-    $('#playlist>.list>li').removeClass('active');
-    $elem.addClass('active');
-    playMySong($url);
+audio.onpause = function () {
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = 'block';
+}
+audio.onplay = function () {
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+}
+audio.onended = nextSong;
+
+function nextSong() {
+    var $elem = $('#playlist>.list>li.active').next();
+    var $url = $elem.attr("name");
+    if ($elem && $url != undefined) {
+        $('#playlist>.list>li').removeClass('active');
+        $elem.addClass('active');
+        gcursong = $elem.html();
+        playMySong($url);
+        refreshInfo();
+        fuckitup()
+    }
+}
+
+function prevSong() {
+    var $elem = $('#playlist>.list>li.active').prev();
+    var $url = $elem.attr("name");
+    if ($elem && $url != undefined) {
+        $('#playlist>.list>li').removeClass('active');
+        $elem.addClass('active');
+        gcursong = $elem.html();
+        playMySong($url);
+        refreshInfo();
+        fuckitup()
+    }
 }
 
 nowPlaying.onmousewheel = function (e) {
     newVol = gainNode.gain.value + (e.wheelDelta / 2400);
     volChange = 200;
+    //hairoffset=hairoffset+Math.sign(e.wheelDelta)
     /*wafer = 40000;*/
     gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
 }
@@ -387,4 +439,44 @@ function genPalette() {
     paletteContext.stroke();
 }
 genPalette();
-playMySong("High Hopes.mp3");
+Init("Finale.mp3");
+
+function addToPlay() {
+    var file = document.getElementById('takeNew').files[0];
+    var URL = window.URL;
+    var fileURL = URL.createObjectURL(file);
+    console.log(fileURL);
+    audio.src = fileURL;
+}
+
+$('#meta').click(function () {
+    $(this).toggleClass('active');
+    refreshInfo();
+});
+
+function refreshInfo() {
+    document.getElementById('title').innerHTML = gcursong;
+}
+
+audio.onloadeddata = function () {
+    $('#meta').addClass('active');
+    window.setTimeout(function () {
+        $('#meta').removeClass('active');
+    }, 5000);
+}
+
+document.body.ondragover = function () {
+    $('#tray').addClass('active');
+};
+
+document.body.ondrop = function () {
+    $('#tray').removeClass('active');
+    fuckitup();
+};
+
+function fuckitup() {
+    $('#canvas').addClass('next');
+    setTimeout(function () {
+        $('#canvas').removeClass('next')
+    }, 500);
+}

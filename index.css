@@ -46,10 +46,10 @@ body {
 
 #header {
     height: 10vh;
-    width: 10vw;
+    width: 30vw;
     /*background: #2c2c2c;*/
     z-index: +100;
-    margin-left: -5vw;
+    margin-left: -15vw;
     left: 50%;
     position: absolute;
     text-align: center;
@@ -432,7 +432,7 @@ li:focus
 
 @keyframes showMe
 {
-    0%{opacity: 1;transform: scale(0.8);}
+    0%{opacity: 1;transform: scale(0.2);}
 }
 
 #player #now_playing>#deafNet
@@ -488,7 +488,6 @@ li:focus
 #sideControls>li.active
 {
     margin-left: 25vw;
-    background: #252525;
 }
 
 #sideControls .material-icons:hover
@@ -501,7 +500,86 @@ li:focus
 }
 
 #tab{
-    height: 60vh;
+    height: 50vh;
+}
+
+#sideControls>li#meta
+{
+    height: 20vh;
+    width: 20vh;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+#meta>img
+{
+    height: 10vh;
+    width: 10vh;
+    position: absolute;
+    bottom:0;
+    transition:all 0.3s cubic-bezier(0,0,0,1);
+    left: 0;
+}
+
+#sideControls>li#meta.active
+{
+    margin: 0;
+}
+
+#infoflow
+{
+    position: absolute;
+    height: 10vh;
+    left: 10vh;
+    bottom:0vh;
+    display: block;
+    opacity: 0;
+    box-sizing: border-box;
+    transition:all 0.3s cubic-bezier(0,0,0,1);
+    padding:0px 20px;
+}
+
+#meta:hover #infoflow,#meta.active #infoflow
+{
+    opacity: 1;
+    left: 20vh;
+    height: 20vh;
+    padding: 5vh 20px;
+    background:linear-gradient(to left,transparent 30%,rgba(255,255,255,0.1) 100%);
+}
+
+#meta:hover>img,#meta.active>img
+{
+    height: 20vh;
+    width: 20vh;
+}
+
+#meta>div>span
+{
+    float:left;
+    position: relative;
+    display: inline-flex;
+    white-space: nowrap;
+    color:#e0e0e0;
+}
+
+#meta>div>span.title
+{
+    height: 4vh;
+    line-height: 4vh;
+    font-size: 2.5vh;
+    letter-spacing: 0.06em;
+}
+#meta>div>span.album,#meta>div>span.artist
+{
+    height: 3vh;
+    float: left;
+    clear: both;
+    line-height: 3vh;
+    font-size: 2vh;
+    font-weight: 300;
+    letter-spacing: 0.07em;
 }
 
 #sideControls>li#tab:hover,#sideControls>li#tab:active
@@ -524,4 +602,44 @@ li:focus
 #palette.active
 {
     display: block;
+}
+
+#takeNew
+{
+    position: absolute;
+    z-index: +1000;
+    top:0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+#tray
+{
+    width: 100%;
+    height:100%;
+    background: rgba(255,255,255,1);
+    z-index: -1;
+    opacity: 0.1;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-size: 40%;
+    background-image: url("landing.img/tray.png");
+    background-position: center;
+}
+
+#tray.active
+{
+    z-index: +400;
+}
+
+#canvas.next
+{
+    animation:rotation 0.5s 1;
+    transform: rotateY(360deg);
+}
+
+@-webkit-keyframes rotation
+{
+    0%{transform: rotateY(0deg);}
 }

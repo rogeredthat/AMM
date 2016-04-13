@@ -1,13 +1,14 @@
 <html>
 
 <head>
-    <title>Play AMM</title>
+    <title>Player - CURL</title>
     <link rel="stylesheet" type="text/css" href="index.css" />
     <link rel="stylesheet" type="text/css" href="../hosted/fonts/material-icons/font.css" />
     <script src="../hosted/scripts/shortcuts.js"></script>
     <script src="../hosted/scripts/jquery.min.js"></script>
     <script src="../hosted/scripts/jquery-ui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../hosted/stylesheets/jquery-ui.css" />
+    <link rel="icon" type="img/png" href="landing.img/favicon.png"/>
 </head>
 
 <body>
@@ -58,17 +59,23 @@
                     <div tabindex="2" class="material-icons" id="clear_playlist">clear_all</div>
                 </div>
                 <ul class="list">
-                    <li name="High Hopes.mp3" class="active"><span>High Hopes</span></li>
+                    <li name="Fix You.mp3" class="active"><span>Fix You</span></li>
+                    <li name="21Guns.mp3"><span>21 Guns</span></li>
+                    <li name="Clocks.mp3"><span>Clocks</span></li>
+                    <li name="breaking bad.mp3"><span>Breaking Bad Theme</span></li>
+                    <li name="High Hopes.mp3"><span>High Hopes</span></li>
                     <li name="fire-away.mp3"><span>Fire Away</span></li>
                     <li name="seduction.mp3"><span>Seduction</span></li>
                     <li name="like toy soldiers.mp3"><span>Like Toy Soldiers</span></li>
                     <li name="habits.mp3"><span>Habits (Stay High)</span></li>
+                    <li name="headlights.mp3"><span>Headlights</span></li>
                     <li name="nothing.mp3"><span>Nothing Without Love</span></li>
+                    <li name="Enchanted.mp3"><span>Enchanted</span></li>
                     <li name="Bohemian Rhapsody.mp3"><span>Bohemian Rhapsody</span></li>
                     <li name="finale.mp3"><span>Finale</span></li>
                     <li name="its you.mp3"><span>Its You</span></li>
                     <li name="Cheerleader.mp3"><span>Cheerleader</span></li>
-                    <li name="Show you.mp3"><span>I&#39;ll Show You</span></li>
+                    <li name="Love Yourself.mp3"><span>Love Yourself</span></li>
                     <li name="under control.mp3"><span>Under Control</span></li>
                     <li name="careless whisper.mp3"><span>Careless Whisper</span></li>
                     <li name="animals.mp3"><span>Animals</span></li>
@@ -76,8 +83,10 @@
             </div>
         </div>
         <div id="now_playing">
-            <div id="header"><span class="logo">AMM</span></div>
-            <div class="underlay"></div>
+            <div id="header"><span class="logo"></span></div>
+            <div class="underlay">
+                <span class='title'></span>
+            </div>
             <canvas id="canvas" class="active"></canvas>
             <div class="overlay">
                 <i id="playIcon" class="material-icons">play_arrow</i>
@@ -92,8 +101,19 @@
                     <canvas tabindex="0" id="palette"></canvas>
                 </li>
                 <li id='tab'></li>
+                <li id="meta" >
+                    <img src="../Calvrix/landing.img/tb.jpg" onclick="toggleInfo()"/>
+                    <div id="infoflow">
+                        <span id="title" class="title">Young Blood</span>
+                        <span id="album" class="album">Passive Me Aggressive You</span>
+                        <span id="artist" class="artist">The Naked &amp; Famous</span>
+                    </div>
+                </li>
             </div>
         </div>
+    </div>
+    <div id="tray">
+        <input type="file" id="takeNew" accept="audio/*" onchange="addToPlay()"/>
     </div>
 </body>
 <!--<script src="http://172.16.120.101/wrap/smartauth.js"></script>-->
