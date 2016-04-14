@@ -8,7 +8,7 @@
     <script src="../hosted/scripts/jquery.min.js"></script>
     <script src="../hosted/scripts/jquery-ui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../hosted/stylesheets/jquery-ui.css" />
-    <link rel="icon" type="img/png" href="landing.img/favicon.png"/>
+    <link rel="icon" type="img/png" href="landing.img/favicon.png" />
 </head>
 
 <body>
@@ -91,6 +91,11 @@
             <div class="overlay">
                 <i id="playIcon" class="material-icons">play_arrow</i>
                 <i id="pauseIcon" style="display:none;" class="material-icons">pause</i>
+                <div id="seeker">
+                    <div id="seekBar"></div>
+                    <div id="seekChange"></div>
+                    <div id="seekHandle"></div>
+                </div>
             </div>
             <div id="deafNet"></div>
             <div id="sideControls">
@@ -101,19 +106,27 @@
                     <canvas tabindex="0" id="palette"></canvas>
                 </li>
                 <li id='tab'></li>
-                <li id="meta" >
-                    <img src="../Calvrix/landing.img/tb.jpg" onclick="toggleInfo()"/>
+                <li id="meta">
+                    <img src="../Calvrix/landing.img/tb.jpg" onclick="toggleInfo()" />
                     <div id="infoflow">
-                        <span id="title" class="title">Young Blood</span>
-                        <span id="album" class="album">Passive Me Aggressive You</span>
-                        <span id="artist" class="artist">The Naked &amp; Famous</span>
+                        <div id="notseekbar">
+                            <span id="title" class="title">Young Blood</span>
+                            <span id="album" class="album">Passive Me Aggressive You</span>
+                            <span id="artist" class="artist">The Naked &amp; Famous</span>
+                        </div>
+                        <div class="seekbar">
+                            <div class='track'>
+                                <div class='progress'></div>
+                                <div class='handle'></div>
+                            </div>
+                        </div>
                     </div>
                 </li>
             </div>
         </div>
     </div>
     <div id="tray">
-        <input type="file" id="takeNew" accept="audio/*" onchange="addToPlay()"/>
+        <input type="file" id="takeNew" accept="audio/*" onchange="addToPlay()" /> Incoming
     </div>
 </body>
 <!--<script src="http://172.16.120.101/wrap/smartauth.js"></script>-->

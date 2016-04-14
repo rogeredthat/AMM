@@ -50,8 +50,10 @@ var gcursong = "Finale";
 function ResizeCanvas() {
     visual.w = nowPlaying.offsetWidth;
     visual.h = nowPlaying.offsetHeight;
+    if (canvas.width != visual.w);
     canvas.width = visual.w;
-    canvas.height = visual.h;
+    if (canvas.height != visual.h)
+        canvas.height = visual.h;
     playerRad = ((visual.w > visual.h) ? visual.h : visual.w) / 4;
 }
 var wafer = 0;
@@ -78,6 +80,10 @@ for (i = 0; i < 256; i++) {
 
 function playMySong(songTitle) {
     audio.src = "landing.audio/" + songTitle;
+}
+
+function Splash() {
+
 }
 
 function Init(songTitle) {
@@ -112,17 +118,18 @@ function Init(songTitle) {
         ctx.beginPath();
         ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, 0, 2 * Math.PI);
         ctx.closePath();
+        ctx.fillStyle = 'rgb(0,0,0)';
         ctx.globalAlpha = 1;
         ctx.fill();
         ctx.stroke();
         for (i = 0; i < spectrum.length / 2; i++) {
-            spectrum[i].x = (CurrentRad*1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad*1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
+            spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
+            spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
             //spectrum[i].y = Math.min(spectrum[i].y,30);
         }
         for (i = spectrum.length / 2; i < spectrum.length; i++) {
-            spectrum[i].x = (CurrentRad*1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad*1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
+            spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
+            spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
             //spectrum[i].y = Math.min(spectrum[i].y,30);
         }
     };
@@ -140,8 +147,8 @@ function draw() {
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.globalAlpha = 0.75;
     ctx.fillRect(0, 0, visual.w, visual.h);
-    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = "rgb(0,0,0)";
+    ctx.globalAlpha = 1;
     //ctx.lineWidth = 1.5;
     ctx.lineWidth = 2;
     for (i = 0; i < currentPoints.length; i++) {
@@ -149,45 +156,54 @@ function draw() {
         currentPoints[i].y += (spectrum[i].y - currentPoints[i].y) / 10;
     }
 
+    ctx.beginPath();
     ctx.moveTo((visual.w / 2) + currentPoints[0].x, (visual.h / 2) + currentPoints[0].y);
-
-    for (i = 1; i < 256 * (audio.currentTime / audio.duration); i++) {
+    for (i = 0; i < 256 * (audio.currentTime / audio.duration); i++) {
         ctx.lineTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
     }
+    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+    ctx.globalAlpha = 0.4;
     ctx.stroke();
+    ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * (i + 10) + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * (i + 10) + phase));
+    ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, deg * 10 + phase, deg * (i + 10) + phase);
+    ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * 10 + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * 10 + phase));
+    ctx.closePath();
+    ctx.globalAlpha = 0.2;
+    ctx.stroke();
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = "hsl(" + baseColor + ",100%,60%)";
+    ctx.fill();
+    ctx.lineWidth = 2;
     ctx.beginPath();
+    ctx.globalAlpha = 0.5;
     ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
     for (i = Math.floor(256 * (audio.currentTime / audio.duration)); i < currentPoints.length; i++) {
         ctx.lineTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
     }
     ctx.lineTo((visual.w / 2) + currentPoints[0].x, (visual.h / 2) + currentPoints[0].y);
-    ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
+    ctx.strokeStyle = "hsl(" + baseColor + ",40%,20%)";
     ctx.stroke();
+
+    //Curl's hair
     ctx.globalAlpha = 0.2;
+    ctx.lineWidth = 1;
     for (i = 0; i < currentPoints.length; i++) {
         if (i % 1 == 0) {
-            j = ((i + hairoffset) + 256) % 256;
+            j = i + 10;
             ctx.beginPath();
             //for seeker
-            if (i < (len=256 * (audio.currentTime / audio.duration))) {
+            if (i < (len = 256 * (audio.currentTime / audio.duration))) {
                 ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-                ctx.globalAlpha = 0.4;
-                /*ctx.lineWidth = (1-Math.abs(((len/2)-i)/(len/2)))*(CurrentRad/25)+1.5;*/
-                ctx.lineWidth=1.5;
-                ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-            ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * j + phase));
-            ctx.closePath();
-            ctx.stroke();
+                ctx.globalAlpha = 0.3;
             } else {
-                ctx.globalAlpha = 0.2;
-                ctx.lineWidth=1.5;
+                ctx.globalAlpha = 0.4;
                 ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
-                ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-            ctx.lineTo((visual.w / 2) + (CurrentRad + 1) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad + 1) * Math.sin(deg * j + phase));
+            }
+            ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+            ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
             ctx.closePath();
             ctx.stroke();
-            }
-            
+
         }
     }
 
@@ -439,7 +455,7 @@ function genPalette() {
     paletteContext.stroke();
 }
 genPalette();
-Init("Finale.mp3");
+Init("Colors.mp3");
 
 function addToPlay() {
     var file = document.getElementById('takeNew').files[0];
@@ -447,6 +463,7 @@ function addToPlay() {
     var fileURL = URL.createObjectURL(file);
     console.log(fileURL);
     audio.src = fileURL;
+    audio.currentTime = 0;
 }
 
 $('#meta').click(function () {
@@ -480,3 +497,64 @@ function fuckitup() {
         $('#canvas').removeClass('next')
     }, 500);
 }
+
+$('#seekHandle').draggable({
+    start: function (e) {
+        $('#seekHandle').parent().addClass('dragged');
+    }
+    , drag: function () {
+        w = $('#seekHandle').width();
+        pos = $('#seekHandle').position().left - w / 2;
+        console.log(pos);
+        if (pos) {
+            $('#seekChange').css({
+                left: w / 2
+                , right: w / 2 - pos
+            });
+        } else {
+            $('#seekChange').css({
+                left: w / 2 - pos
+                , right: w / 2
+            });
+        }
+    }
+    , stop: function () {
+        $('#seekHandle').parent().removeClass('dragged');
+        $('#seekHandle').css({
+            'left': '50%'
+        });
+    }
+    , axis: 'x'
+    , containment: $("#seekBar").parent()
+});
+
+audio.addEventListener('timeupdate',pushSeek,false);
+function pushSeek()
+{
+    var pos=((audio.currentTime/audio.duration)*$('#infoflow .track').width());
+    $('#infoflow .handle').css({left:pos});
+    $('#infoflow .progress').css({width:pos});
+}
+
+$('.handle').draggable({
+    axis: 'x'
+    , containment: 'parent'
+    , start: function(){
+        audio.removeEventListener('timeupdate',pushSeek,false);
+    }
+    , drag:function(){
+        var pos=$('#infoflow .handle').position().left;
+        var time=pos/$('#infoflow .track').width()*audio.duration;
+        $('#infoflow .progress').css({width:pos});
+        audio.currentTime=time;
+    }
+    , stop:function(){
+        audio.addEventListener('timeupdate',pushSeek,false);
+    }
+});
+
+$('#infoflow .track').click(function(e){
+    var pos=e.pageX-$(this).offset().left;
+    $('#infoflow .progress').css({width:pos});
+    audio.currentTime=(pos/$('#infoflow .track').width())*audio.duration;
+});

@@ -534,10 +534,67 @@ li:focus
     left: 10vh;
     bottom:0vh;
     display: block;
+    width: 80vw;
     opacity: 0;
     box-sizing: border-box;
     transition:all 0.3s cubic-bezier(0,0,0,1);
     padding:0px 20px;
+}
+
+#notseekbar{
+    height: 60%;
+    float: left;
+    clear: both;
+    display:block;
+}
+
+#infoflow>.seekbar{
+    height: 40%;
+    clear: both;
+    float: left;
+    display:block;
+    width: 40vw;
+    position: relative;
+}
+
+#infoflow>.seekbar>.track
+{
+    width:100%;
+    height:2px;
+    top:50%;
+    cursor: pointer;
+    position: absolute;
+    margin-top:-1px;
+    background-color:rgba(255,255,255,0.4);
+}
+
+#infoflow>.seekbar>.track>.progress
+{
+    height:100%;
+    top:0;
+    left: 0;
+    position: absolute;
+    background: #fff;
+    cursor:pointer;
+}
+
+#infoflow>.seekbar>.track>.handle
+{
+    width:14px;
+    background:#fff;
+    position: absolute;
+    height:14px;
+    cursor: pointer;
+    border-radius:50%;
+    margin:-7px;
+    top:50%;
+    transform: scale(0.7);
+    transition:transform 0.1s;
+}
+
+#infoflow:hover>.seekbar>.track>.handle
+{
+    transform: scale(1);
 }
 
 #meta:hover #infoflow,#meta.active #infoflow
@@ -545,7 +602,7 @@ li:focus
     opacity: 1;
     left: 20vh;
     height: 20vh;
-    padding: 5vh 20px;
+    padding: 2vh 20px;
     background:linear-gradient(to left,transparent 30%,rgba(255,255,255,0.1) 100%);
 }
 
@@ -555,7 +612,7 @@ li:focus
     width: 20vh;
 }
 
-#meta>div>span
+#meta>div>div>span
 {
     float:left;
     position: relative;
@@ -564,14 +621,14 @@ li:focus
     color:#e0e0e0;
 }
 
-#meta>div>span.title
+#meta>div>div>span.title
 {
     height: 4vh;
     line-height: 4vh;
     font-size: 2.5vh;
     letter-spacing: 0.06em;
 }
-#meta>div>span.album,#meta>div>span.artist
+#meta>div>div>span.album,#meta>div>div>span.artist
 {
     height: 3vh;
     float: left;
@@ -609,6 +666,7 @@ li:focus
     position: absolute;
     z-index: +1000;
     top:0;
+    opacity: 0;
     display: block;
     width: 100vw;
     height: 100vh;
@@ -618,16 +676,40 @@ li:focus
 {
     width: 100%;
     height:100%;
-    background: rgba(255,255,255,1);
+    background: rgba(0,0,0,0.85);
     z-index: -1;
-    opacity: 0.1;
+    opacity: 1;
     position: fixed;
     background-repeat: no-repeat;
     background-size: 40%;
-    background-image: url("landing.img/tray.png");
+    content:"Incoming";
+    color:rgba(255,255,255,0.4);
+    text-align: center;
+    line-height: 100vh;
     background-position: center;
 }
-
+#tray:after,#tray:before
+{
+    height:60vh;
+    width:60vh;
+    position:absolute;
+    top:50%;
+    left:50%;
+    content: "";
+    margin: -30vh;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.7);
+    opacity: 0.7;
+    animation: incoming 2s infinite cubic-bezier(0,0,0,0.5);
+}
+#tray:after
+{
+    animation-delay:1s;
+}
+@keyframes incoming
+{
+    100%{transform:scale(0.7);opacity: 0;}
+}
 #tray.active
 {
     z-index: +400;
@@ -636,10 +718,93 @@ li:focus
 #canvas.next
 {
     animation:rotation 0.5s 1;
-    transform: rotateY(360deg);
+    transform: rotateY(180deg);
 }
 
 @-webkit-keyframes rotation
 {
     0%{transform: rotateY(0deg);}
+}
+
+#seekHandle
+{
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.5);
+    position: absolute;
+    background: #000;
+    height:400px;
+    box-sizing: border-box;
+    top:50%;
+    left: 50%;
+    width:400px;
+    opacity: 0;
+    margin:-200px;
+    cursor:grabbing;
+}
+
+.dragged>#seekHandle
+{
+    animation:bloop 0.2s 1; 
+    opacity: 1;
+    width: 26px;
+    height: 26px;
+    margin:-13px;
+}
+
+.dragged
+{
+    background:rgba(255,255,255,0.1);
+}
+
+@keyframes bloop
+{
+    0%{transform:scale(0);opacity: 0;}
+    100%{transform: scale(1);opacity: 1;}
+}
+
+#seeker
+{
+    display: block;
+    height: 2px;
+    width: 80vw;
+    left: 10vw;
+    position: absolute;
+    top:50vh;
+    margin:-1px;
+}
+
+#seekBar
+{
+    display: block;
+    height:2px;
+    position: absolute;
+    background:rgba(255,255,255,0.4);
+    top:50%;
+    transition:all 0.5s;
+    width: 0vw;
+    margin:-1px 40vw;
+}
+
+#seekChange
+{
+    display: block;
+    right:40vw;
+    position:absolute;
+    height: 4px;
+    margin:-2px 0px;
+    background:#fff;
+}
+
+.dragged>#seekBar
+{
+    width: 80vw;
+    margin:-1px 0vw;
+}
+
+.dragged>#seekBar:after
+{
+    width: 2px;
+    height:10vh;
+    content: "";
+    position: absolute;
 }
