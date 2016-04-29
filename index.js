@@ -26,6 +26,7 @@ var volChange = 0;
 var baseColor = 243;
 var flyout = false;
 
+var jsmediatags = window.jsmediatags; //JS media tags library object
 var nowPlaying = document.getElementById('now_playing');
 var canvas = document.getElementById('canvas');
 var palette = document.getElementById('palette');
@@ -34,8 +35,8 @@ var infoflow = document.getElementById('infoflow');
 var ctx = canvas.getContext('2d');
 var avg = 0;
 var visual = {
-    w: nowPlaying.clientWidth
-    , h: nowPlaying.clientHeight
+    w: nowPlaying.clientWidth,
+    h: nowPlaying.clientHeight
 };
 canvas.width = visual.w;
 canvas.height = visual.h;
@@ -43,9 +44,10 @@ var playerRad = ((visual.w > visual.h) ? visual.h : visual.w) / 4;
 var AimedRad = playerRad;
 var CurrentRad = playerRad;
 var hairoffset = 10;
+var curtags = null; //To store tags of currently playing song.
 
 //global information variables
-var gcursong = "Finale";
+
 
 function ResizeCanvas() {
     visual.w = nowPlaying.offsetWidth;
@@ -63,18 +65,17 @@ var analyser = context.createAnalyser();
 var gainNode = context.createGain();
 var buffer = context.createMediaElementSource(audio);
 
-spectrum = []
-    , currentPoints = [];
+spectrum = [], currentPoints = [];
 deg = Math.PI / 128;
 phase = 0;
 for (i = 0; i < 256; i++) {
     spectrum.push({
-        x: playerRad * Math.cos(deg * i)
-        , y: playerRad * Math.sin(deg * i)
+        x: playerRad * Math.cos(deg * i),
+        y: playerRad * Math.sin(deg * i)
     });
     currentPoints.push({
-        x: playerRad * Math.cos(deg * i)
-        , y: playerRad * Math.sin(deg * i)
+        x: playerRad * Math.cos(deg * i),
+        y: playerRad * Math.sin(deg * i)
     });
 }
 
@@ -258,36 +259,36 @@ $('#playlist>.list>li').dblclick(function () {
     playMySong($(this).attr("name"));
     $('#playlist>.list>li').removeClass('active');
     $(this).addClass('active');
-    gcursong = $(this).html();
+    curtags.tags.title = $(this).html();
 });
 
 shortcut.add("p", function (e) {
     $('#playlist_toggle').click();
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': true
+    'type': 'keydown',
+    'disable_in_input': true
 });
 
 shortcut.add("right", function () {
     $('#search_button').click();
     searchInput.focus();
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': true
+    'type': 'keydown',
+    'disable_in_input': true
 });
 
 shortcut.add("Shift+right", function () {
     audio.currentTime += 3;
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Shift+left", function () {
     audio.currentTime -= 3;
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Ctrl+down", function () {
@@ -295,8 +296,8 @@ shortcut.add("Ctrl+down", function () {
     volChange = 200;
     gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Ctrl+Up", function () {
@@ -304,8 +305,8 @@ shortcut.add("Ctrl+Up", function () {
     volChange = 200;
     gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Esc", function () {
@@ -319,29 +320,29 @@ shortcut.add("Esc", function () {
         searchInput.blur();
     }
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': true
+    'type': 'keydown',
+    'disable_in_input': true
 });
 
 shortcut.add("Ctrl+Shift+Right", function () {
     nextSong();
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Ctrl+Shift+left", function () {
     prevSong();
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': false
+    'type': 'keydown',
+    'disable_in_input': false
 });
 
 shortcut.add("Space", function () {
     playPause();
 }, {
-    'type': 'keydown'
-    , 'disable_in_input': true
+    'type': 'keydown',
+    'disable_in_input': true
 });
 
 searchInput.onfocus = function () {
@@ -385,7 +386,7 @@ function nextSong() {
     if ($elem && $url != undefined) {
         $('#playlist>.list>li').removeClass('active');
         $elem.addClass('active');
-        gcursong = $elem.html();
+        curtags.tags.title = $elem.html();
         playMySong($url);
         refreshInfo();
         fuckitup()
@@ -398,7 +399,7 @@ function prevSong() {
     if ($elem && $url != undefined) {
         $('#playlist>.list>li').removeClass('active');
         $elem.addClass('active');
-        gcursong = $elem.html();
+        curtags.tags.title = $elem.html();
         playMySong($url);
         refreshInfo();
         fuckitup()
@@ -463,6 +464,29 @@ function addToPlay() {
     var fileURL = URL.createObjectURL(file);
     console.log(fileURL);
     audio.src = fileURL;
+    // From remote host
+    jsmediatags.read(file, {
+        onSuccess: function (tag) {
+            console.log(tag);
+            curtags = tag;
+            var title = document.getElementById('title');
+            var artist = document.getElementById('artist');
+            var album = document.getElementById('album');
+            var maincoverart = document.getElementById('maincoverart');
+            title.innerHTML = tag.tags.title;
+            artist.innerHTML = tag.tags.artist;
+            album.innerHTML = tag.tags.album;
+            var base64String = "";
+            for (var i = 0; i < tag.tags.picture.data.length; i++) {
+                base64String += String.fromCharCode(tag.tags.picture.data[i]);
+            }
+            var dataUrl = "data:" + tag.tags.picture.format + ";base64," + window.btoa(base64String);
+            maincoverart.setAttribute('src', dataUrl);
+        },
+        onError: function (error) {
+            console.log(error);
+        }
+    });
     audio.currentTime = 0;
 }
 
@@ -472,7 +496,7 @@ $('#meta').click(function () {
 });
 
 function refreshInfo() {
-    document.getElementById('title').innerHTML = gcursong;
+    document.getElementById('title').innerHTML = curtags.tags.title;
 }
 
 audio.onloadeddata = function () {
@@ -501,60 +525,68 @@ function fuckitup() {
 $('#seekHandle').draggable({
     start: function (e) {
         $('#seekHandle').parent().addClass('dragged');
-    }
-    , drag: function () {
+    },
+    drag: function () {
         w = $('#seekHandle').width();
         pos = $('#seekHandle').position().left - w / 2;
         console.log(pos);
         if (pos) {
             $('#seekChange').css({
-                left: w / 2
-                , right: w / 2 - pos
+                left: w / 2,
+                right: w / 2 - pos
             });
         } else {
             $('#seekChange').css({
-                left: w / 2 - pos
-                , right: w / 2
+                left: w / 2 - pos,
+                right: w / 2
             });
         }
-    }
-    , stop: function () {
+    },
+    stop: function () {
         $('#seekHandle').parent().removeClass('dragged');
         $('#seekHandle').css({
             'left': '50%'
         });
-    }
-    , axis: 'x'
-    , containment: $("#seekBar").parent()
+    },
+    axis: 'x',
+    containment: $("#seekBar").parent()
 });
 
-audio.addEventListener('timeupdate',pushSeek,false);
-function pushSeek()
-{
-    var pos=((audio.currentTime/audio.duration)*$('#infoflow .track').width());
-    $('#infoflow .handle').css({left:pos});
-    $('#infoflow .progress').css({width:pos});
+audio.addEventListener('timeupdate', pushSeek, false);
+
+function pushSeek() {
+    var pos = ((audio.currentTime / audio.duration) * $('#infoflow .track').width());
+    $('#infoflow .handle').css({
+        left: pos
+    });
+    $('#infoflow .progress').css({
+        width: pos
+    });
 }
 
 $('.handle').draggable({
-    axis: 'x'
-    , containment: 'parent'
-    , start: function(){
-        audio.removeEventListener('timeupdate',pushSeek,false);
-    }
-    , drag:function(){
-        var pos=$('#infoflow .handle').position().left;
-        var time=pos/$('#infoflow .track').width()*audio.duration;
-        $('#infoflow .progress').css({width:pos});
-        audio.currentTime=time;
-    }
-    , stop:function(){
-        audio.addEventListener('timeupdate',pushSeek,false);
+    axis: 'x',
+    containment: 'parent',
+    start: function () {
+        audio.removeEventListener('timeupdate', pushSeek, false);
+    },
+    drag: function () {
+        var pos = $('#infoflow .handle').position().left;
+        var time = pos / $('#infoflow .track').width() * audio.duration;
+        $('#infoflow .progress').css({
+            width: pos
+        });
+        audio.currentTime = time;
+    },
+    stop: function () {
+        audio.addEventListener('timeupdate', pushSeek, false);
     }
 });
 
-$('#infoflow .track').click(function(e){
-    var pos=e.pageX-$(this).offset().left;
-    $('#infoflow .progress').css({width:pos});
-    audio.currentTime=(pos/$('#infoflow .track').width())*audio.duration;
+$('#infoflow .track').click(function (e) {
+    var pos = e.pageX - $(this).offset().left;
+    $('#infoflow .progress').css({
+        width: pos
+    });
+    audio.currentTime = (pos / $('#infoflow .track').width()) * audio.duration;
 });
