@@ -406,12 +406,39 @@ function prevSong() {
     }
 }
 
-nowPlaying.onmousewheel = function (e) {
+function volumescroll(e) {
     newVol = gainNode.gain.value + (e.wheelDelta / 2400);
     volChange = 200;
     //hairoffset=hairoffset+Math.sign(e.wheelDelta)
     /*wafer = 40000;*/
     gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
+}
+
+//workaound for volume change by mouse wheel code for firefox
+var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel" //FF doesn't recognize mousewheel as of FF3.x
+if (document.attachEvent) { //if IE (and Opera depending on user setting)
+    document.attachEvent("on" + mousewheelevt, function (e) {
+        newVol = gainNode.gain.value + (e.wheelDelta / 2400);
+        volChange = 200;
+        console.log(e);
+        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
+        /*wafer = 40000;*/
+        gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
+    })
+} else if (document.addEventListener) { //WC3 browsers
+    document.addEventListener(mousewheelevt, function (e) {
+        var scrolldelta = e.wheelDelta;
+        if (scrolldelta == undefined) {
+            scrolldelta = -e.detail*40;
+        }
+        newVol = gainNode.gain.value + (scrolldelta / 2400);
+        console.log(e.detail);
+        console.log(e);
+        volChange = 200;
+        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
+        /*wafer = 40000;*/
+        gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
+    }, false);
 }
 
 //playlist sorting
@@ -473,14 +500,17 @@ function addToPlay() {
             var artist = document.getElementById('artist');
             var album = document.getElementById('album');
             var maincoverart = document.getElementById('maincoverart');
+            var dataUrl = "landing.img/default.png";
             title.innerHTML = tag.tags.title;
             artist.innerHTML = tag.tags.artist;
             album.innerHTML = tag.tags.album;
-            var base64String = "";
-            for (var i = 0; i < tag.tags.picture.data.length; i++) {
-                base64String += String.fromCharCode(tag.tags.picture.data[i]);
+            if (tag.tags.picture != undefined) {
+                var base64String = "";
+                for (var i = 0; i < tag.tags.picture.data.length; i++) {
+                    base64String += String.fromCharCode(tag.tags.picture.data[i]);
+                }
+                dataUrl = "data:" + tag.tags.picture.format + ";base64," + window.btoa(base64String);
             }
-            var dataUrl = "data:" + tag.tags.picture.format + ";base64," + window.btoa(base64String);
             maincoverart.setAttribute('src', dataUrl);
         },
         onError: function (error) {
