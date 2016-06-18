@@ -483,7 +483,7 @@ function genPalette() {
     paletteContext.stroke();
 }
 genPalette();
-Init("Colors.mp3");
+Init("seduction.mp3");
 
 function addToPlay() {
     var file = document.getElementById('takeNew').files[0];
