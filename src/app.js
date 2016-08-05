@@ -1,13 +1,7 @@
-var app = require('app');
-var BrowserWindow = require('browser-window');
+const electron = require('electron');
+const {app, BrowserWindow} = electron;
 
-var mainWindow = null;
-
-app.on('ready', function() {
-    mainWindow = new BrowserWindow({
-        height: 600,
-        width: 800
-    });
-
-    mainWindow.loadUrl('file://' + __dirname + '/app/index.html');
+app.on('ready',() => {
+	let mainWindow = new BrowserWindow({width:800,height:600});
+	mainWindow.loadURL('https://google.com');
 });
