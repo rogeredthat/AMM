@@ -3,12 +3,13 @@
 <head>
     <title>Player - CURL</title>
     <link rel="stylesheet" type="text/css" href="index.css" />
-    <link rel="stylesheet" type="text/css" href="../hosted/fonts/material-icons/font.css" />
-    <script src="../hosted/scripts/shortcuts.js"></script>
-    <script src="../hosted/scripts/jquery.min.js"></script>
-    <script src="../hosted/scripts/jquery-ui.min.js"></script>
-    <script src="jsmediatags.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../hosted/stylesheets/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../lib/material-icons/font.css" />
+    <script src="../lib/shortcuts.js"></script>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../lib/jquery-ui.min.js"></script>
+    <script src="../lib/jsmediatags.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../lib/jquery-ui.css" />
     <link rel="icon" type="img/png" href="landing.img/favicon.png" />
 </head>
 
@@ -91,7 +92,7 @@
                 </li>
                 <li id='tab'></li>
                 <li id="meta">
-                    <img id="maincoverart" src="landing.img/default.png"s onclick="toggleInfo()" />
+                    <img id="maincoverart" src="img/default.png"s onclick="toggleInfo()" />
                     <div id="infoflow">
                         <div id="notseekbar">
                             <span id="title" class="title">Young Blood</span>
@@ -115,5 +116,5 @@
 </body>
 <!--<script src="http://172.16.120.101/wrap/smartauth.js"></script>-->
 <script src="index.js"></script>
-
+<script>if (window.module) module = window.module;</script>
 </html>
