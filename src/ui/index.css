@@ -1,0 +1,811 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+* {
+    font-family: 'Proxima Nova';
+    cursor: default;
+}
+
+*:focus
+{
+    outline: none;
+}
+
+#player {
+    width: 100vw;
+    height: 100vh;
+    top:0;
+    position: absolute;
+    display: inline-flex;
+}
+
+#now_playing {
+    display: inline-flex;
+    position: relative;
+    user-select:none;
+    -webkit-user-select:none;
+    -mz-user-select:none;
+    height: 100%;
+    width: 100vw;
+    flex: 1;
+    background: #000;
+    transition: all 0.4s;
+}
+
+#player.active #now_playing
+{
+    width: 75vw;
+}
+
+#player.active #sidebar
+{
+    margin-left:0vw;
+}
+
+#header {
+    height: 10vh;
+    width: 30vw;
+    /*background: #2c2c2c;*/
+    z-index: +100;
+    margin-left: -15vw;
+    left: 50%;
+    position: absolute;
+    text-align: center;
+}
+
+#header>span.logo
+{
+    line-height: 10vh;
+    color:white;
+    letter-spacing: -0.06em;
+    font-weight: 600;
+}
+
+#sidebar {
+    position: relative;
+    width: 25vw;
+    margin-left: -25vw;
+    height: 100%;
+    background: #fff;
+    z-index: +15;
+    transition: all 0.4s cubic-bezier(0, 0, 0, 1);
+}
+
+#search_wrapper {
+    display: block;
+    z-index: +10;
+    height: 10vh;
+    margin-left: 0%;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: #191919;
+    transition: all 0.4s cubic-bezier(0, 0, 0, 1);
+}
+
+#search_wrapper.active
+{
+    margin-left: 25vw;
+}
+
+#search_item {
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0px 10px;
+    background: transparent;
+    color: lavender;
+    font-size: 2.5vh;
+    font-weight: 300;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+#search_item:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+#search_wrapper>#suggestionWrapper {
+    position: absolute;
+    min-height: 100px;
+    top: 100%;
+    z-index: +10;
+    background: #191919;
+    max-height: 60vh;
+    left: 0;
+    display: none;
+    width: 25vw;
+    overflow: hidden;
+    padding-bottom: 6vh;
+    box-shadow: 5px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.5s 1 cubic-bezier(0, 0, 0, 1);
+}
+
+#suggestionWrapper.active {
+    display: block;
+}
+
+#suggestionWrapper>li {
+    width: 100%;
+    height: 8vh;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    line-height: 6vh;
+    list-style-type: none;
+    padding: 1vh 10px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+#suggestionWrapper>li:hover {
+    background: #222;
+}
+
+@keyframes slideDown {
+    0% {
+        min-height: 0px;
+        height: 0px;
+    }
+}
+
+@-webkit-keyframes slideDown {
+    0% {
+        height: 0px;
+        min-height: 0px;
+    }
+}
+
+#playlist {
+    display: block;
+    width: 25vw;
+    float: left;
+    min-height: 100px;
+    position: absolute;
+    background: #f0f0f0;
+    top: 10vh;
+    right: 0;
+    transition:all 0.4s cubic-bezier(0, 0, 0, 1);    
+}
+
+#playlist.active
+{
+    margin-right: -25vw;
+}
+
+#playlist>.list
+{
+    max-height: 75vh;
+    padding: 0px;
+    margin: 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#playlist ::-mz-scrollbar
+{
+    display: none;
+}
+
+#playlist scrollbar
+{
+    display: none;
+}
+
+#playlist ::-webkit-scrollbar
+{
+    display: none;
+}
+
+#playlist>span {
+    position: relative;
+    height: 10vh;
+    width: 25vw;
+    top:0;
+    display: block;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    line-height: 10vh;
+    color: #333;
+    box-sizing: border-box;
+    padding: 0px 20px;
+}
+
+li:focus
+{
+    outline: 1px dotted rgba(0,0,0,1);
+    z-index: +1;
+}
+
+#playlist>span>span
+{
+    float: left;
+    display: block;
+    position: relative;
+    font-size: 3vh;
+}
+
+#playlist>span>i.material-icons {
+    position: relative;
+    top:0;
+    color: #444;
+    float: right;
+    font-size: 3vh;
+    height: 10vh;
+    line-height: 10vh;
+    display: block;
+    transition:all 0.4s cubic-bezier(0,0,0,1);
+    text-align: center;
+}
+
+#playlist>.list>li {
+    height: 5vh;
+    width: 100%;
+    position: relative;
+    list-style-type: none;
+    box-sizing: border-box;
+    padding: 1vh 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background:#fff;
+}
+
+#playlist>.list>li:after
+{
+    position: absolute;
+    top:0;
+    line-height: 5vh;
+    font-family: 'Material Icons';
+    width: 20px;
+    left: 0;
+    color:#444;
+    font-size: 1.75vh;
+    text-align: center;
+    content: "drag_handle";
+}
+
+#playlist>.list>li:before
+{
+    position: absolute;
+    top:0;
+    line-height: 5vh;
+    color:#444;
+    font-family: 'Material Icons';
+    width: 20px;
+    left: 20;
+    font-size: 2.5vh;
+    content: "album";
+}
+
+#playlist>.list>li.active:before
+{
+    content: "music_note";
+}
+
+#playlist>.list>li>span {
+    line-height: 5vh;
+    position: absolute;
+    top:0;
+    left: 40px;
+    font-size: 2vh;
+    color: #444;
+}
+
+#playlist>.list>li>i.material-icons
+{
+    margin-right: 10px;
+}
+
+#playlist>.list>li>span{
+    max-width: 15vw;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#playlist>.list>li.active {
+    background: #e0e0e0;
+    color: #191919;
+}
+
+#suggestionWrapper>li>.albumArt {
+    display: inline-block;
+    height: 6vh;
+    width: 6vh;
+    background: #fff;
+    float: left;
+    position: relative;
+}
+
+#suggestionWrapper>li>.details {
+    display: block;
+    margin-left: 10px;
+    float: left;
+    width: 12vw;
+    position: relative;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#suggestionWrapper>li>.details span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#suggestionWrapper>li>.details>span {
+    line-height: 3vh;
+    display: block;
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+#suggestionWrapper>li>.details>.title {
+    font-size: 2vh;
+    font-weight: 500;   
+    display: block;
+}
+
+#suggestionWrapper>li>.details>.extra>.album,
+#suggestionWrapper>li>.details>.extra>.artist {
+    font-size: 1.75vh;
+    line-height: 3vh;
+    max-width: 50%;
+}
+
+#playlist .controls
+{
+    height: 5vh;
+    position: relative;
+    width: 25vw;
+    display: block;
+    transition:none;
+}
+
+#playlist .controls>div
+{
+    height: 5vh;
+    line-height: 5vh;
+    width: 8vw;
+    text-align: center;
+    display: inline-block;
+    font-size: 2.5vh;
+    color:#777;
+}
+
+#playlist .controls>div:hover
+{
+    color:#333;
+}
+
+#player #now_playing>.underlay {
+    /*background-image: url("landing.img/Motion.jpg");*/
+    width: 100vw;
+    height: 100vh;
+    left: 50%;
+    top: 50%;
+    margin: -50vh -50vw;
+    position: absolute;
+    z-index: 0;
+    background-size: cover;
+    background-color: rgba(0, 0, 0, 0.95);
+    background-blend-mode: darken;
+    background-position: center;
+}
+
+#player #now_playing>.overlay 
+{
+    width: 100%;
+    top:0;
+    left: 0;
+    display: block;
+    height: 100%;
+    z-index: +5;
+    position: absolute;
+    text-align: center;
+}
+
+#player #now_playing>.overlay.inactive
+{
+    display: none;
+}
+
+#player #now_playing>.overlay>i
+{
+    width: 100%;
+    font-size: 100px;
+    color:rgba(255,255,255,1);
+    line-height: 100vh;
+    top:0;
+    left: 0;
+    position: absolute;
+    display: none;
+    opacity: 0;
+    transform: scale(1);
+    animation:showMe 1s 1 cubic-bezier(0,0,0,1); 
+}
+@-webkit-keyframes showMe
+{
+    0%{opacity: 1;transform: scale(0.2);}
+}
+
+@keyframes showMe
+{
+    0%{opacity: 1;transform: scale(0.2);}
+}
+
+#player #now_playing>#deafNet
+{
+    display: none;
+    z-index: +5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    left: 0;
+}
+
+#canvas {
+    position: absolute;
+    z-index: +1;
+}
+
+#sideControls
+{
+    position: absolute;
+    top:0;
+    left: 0;
+    height: 100vh;
+    width: 10vh;
+    background: #191919;
+    z-index: +10;
+    transition: all 0.4s;
+}
+
+#sideControls>li
+{
+    list-style-type: none;
+    position: relative;
+    transition: all 0.4s;
+}
+
+#sideControls .material-icons
+{
+    position: relative;
+    display: block;
+    width: 10vh;
+    height:10vh;
+    background:#191919;
+    color:#e0e0e0;
+    font-size: 3vh;
+    text-align: center;
+    line-height: 10vh;
+    box-sizing: border-box;
+    box-shadow: 0px -1px 0px 0px rgba(0,0,0,0.3) inset;
+}
+
+#sideControls>li.active
+{
+    margin-left: 25vw;
+}
+
+#sideControls .material-icons:hover
+{
+    background: #252525;
+}
+#sideControls .material-icons:active
+{
+    background: #111;
+}
+
+#tab{
+    height: 50vh;
+}
+
+#sideControls>li#meta
+{
+    height: 20vh;
+    width: 20vh;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+#meta>img
+{
+    height: 10vh;
+    width: 10vh;
+    position: absolute;
+    bottom:0;
+    transition:all 0.3s cubic-bezier(0,0,0,1);
+    left: 0;
+}
+
+#sideControls>li#meta.active
+{
+    margin: 0;
+}
+
+#infoflow
+{
+    position: absolute;
+    height: 10vh;
+    left: 10vh;
+    bottom:0vh;
+    display: block;
+    width: 80vw;
+    opacity: 0;
+    box-sizing: border-box;
+    transition:all 0.3s cubic-bezier(0,0,0,1);
+    padding:0px 20px;
+}
+
+#notseekbar{
+    height: 60%;
+    float: left;
+    clear: both;
+    display:block;
+}
+
+#infoflow>.seekbar{
+    height: 40%;
+    clear: both;
+    float: left;
+    display:block;
+    width: 40vw;
+    position: relative;
+}
+
+#infoflow>.seekbar>.track
+{
+    width:100%;
+    height:2px;
+    top:50%;
+    cursor: pointer;
+    position: absolute;
+    margin-top:-1px;
+    background-color:rgba(255,255,255,0.4);
+}
+
+#infoflow>.seekbar>.track>.progress
+{
+    height:100%;
+    top:0;
+    left: 0;
+    position: absolute;
+    background: #fff;
+    cursor:pointer;
+}
+
+#infoflow>.seekbar>.track>.handle
+{
+    width:14px;
+    background:#fff;
+    position: absolute;
+    height:14px;
+    cursor: pointer;
+    border-radius:50%;
+    margin:-7px;
+    top:50%;
+    transform: scale(0.7);
+    transition:transform 0.1s;
+}
+
+#infoflow:hover>.seekbar>.track>.handle
+{
+    transform: scale(1);
+}
+
+#meta:hover #infoflow,#meta.active #infoflow
+{
+    opacity: 1;
+    left: 20vh;
+    height: 20vh;
+    padding: 2vh 20px;
+    background:linear-gradient(to left,transparent 30%,rgba(255,255,255,0.1) 100%);
+}
+
+#meta:hover>img,#meta.active>img
+{
+    height: 20vh;
+    width: 20vh;
+}
+
+#meta>div>div>span
+{
+    float:left;
+    position: relative;
+    display: inline-flex;
+    white-space: nowrap;
+    color:#e0e0e0;
+}
+
+#meta>div>div>span.title
+{
+    height: 4vh;
+    line-height: 4vh;
+    font-size: 2.5vh;
+    letter-spacing: 0.06em;
+}
+#meta>div>div>span.album,#meta>div>div>span.artist
+{
+    height: 3vh;
+    float: left;
+    clear: both;
+    line-height: 3vh;
+    font-size: 2vh;
+    font-weight: 300;
+    letter-spacing: 0.07em;
+}
+
+#sideControls>li#tab:hover,#sideControls>li#tab:active
+{
+    background:#191919;
+}
+
+#palette
+{
+    box-shadow:0px 0px 0px 10px rgba(100,100,100,0.4),0px 0px 10px 0px rgba(0,0,0,0.2);
+    position: absolute;
+    left: 100%;
+    top:0;
+    display: none;
+    background: rgba(100,100,100,0.4);
+    margin:10px;
+    cursor:crosshair;
+}
+
+#palette.active
+{
+    display: block;
+}
+
+#takeNew
+{
+    position: absolute;
+    z-index: +1000;
+    top:0;
+    opacity: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+#tray
+{
+    width: 100%;
+    height:100%;
+    background: rgba(0,0,0,0.85);
+    z-index: -1;
+    opacity: 1;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-size: 40%;
+    content:"Incoming";
+    color:rgba(255,255,255,0.4);
+    text-align: center;
+    line-height: 100vh;
+    background-position: center;
+}
+#tray:after,#tray:before
+{
+    height:60vh;
+    width:60vh;
+    position:absolute;
+    top:50%;
+    left:50%;
+    content: "";
+    margin: -30vh;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.7);
+    opacity: 0.7;
+    animation: incoming 2s infinite cubic-bezier(0,0,0,0.5);
+}
+#tray:after
+{
+    animation-delay:1s;
+}
+@keyframes incoming
+{
+    100%{transform:scale(0.7);opacity: 0;}
+}
+#tray.active
+{
+    z-index: +400;
+}
+
+#canvas.next
+{
+    animation:rotation 0.5s 1;
+    transform: rotateY(180deg);
+}
+
+@-webkit-keyframes rotation
+{
+    0%{transform: rotateY(0deg);}
+}
+
+#seekHandle
+{
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.5);
+    position: absolute;
+    background: #000;
+    height:400px;
+    box-sizing: border-box;
+    top:50%;
+    left: 50%;
+    width:400px;
+    opacity: 0;
+    margin:-200px;
+    cursor:grabbing;
+}
+
+.dragged>#seekHandle
+{
+    animation:bloop 0.2s 1; 
+    opacity: 1;
+    width: 26px;
+    height: 26px;
+    margin:-13px;
+}
+
+.dragged
+{
+    background:rgba(255,255,255,0.1);
+}
+
+@keyframes bloop
+{
+    0%{transform:scale(0);opacity: 0;}
+    100%{transform: scale(1);opacity: 1;}
+}
+
+#seeker
+{
+    display: block;
+    height: 2px;
+    width: 80vw;
+    left: 10vw;
+    position: absolute;
+    top:50vh;
+    margin:-1px;
+}
+
+#seekBar
+{
+    display: block;
+    height:2px;
+    position: absolute;
+    background:rgba(255,255,255,0.4);
+    top:50%;
+    transition:all 0.5s;
+    width: 0vw;
+    margin:-1px 40vw;
+}
+
+#seekChange
+{
+    display: block;
+    right:40vw;
+    position:absolute;
+    height: 4px;
+    margin:-2px 0px;
+    background:#fff;
+}
+
+.dragged>#seekBar
+{
+    width: 80vw;
+    margin:-1px 0vw;
+}
+
+.dragged>#seekBar:after
+{
+    width: 2px;
+    height:10vh;
+    content: "";
+    position: absolute;
+}
+

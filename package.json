@@ -1,0 +1,22 @@
+{
+  "name": "amm",
+  "version": "0.0.5",
+  "description": "All Motherfucking Music",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roggeredthat/AMM.git"
+  },
+  "author": "abhilash-the-pro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roggeredthat/AMM/issues"
+  },
+  "homepage": "https://github.com/roggeredthat/AMM#readme",
+  "devDependencies": {
+    "electron": "^1.3.2"
+  }
+}
