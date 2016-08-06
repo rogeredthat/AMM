@@ -10,7 +10,7 @@ app.on('ready', () => {
     });
     mainWindow.loadURL('file://' + __dirname + '/ui/index.html');
 
-    var expressserver = require('./server/index');
+    var expressserver = require('./server/main');
 
     expressserver.set('port', process.env.PORT || 3000);
 
