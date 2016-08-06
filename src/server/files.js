@@ -10,7 +10,7 @@ module.exports = function () {
   });
 
   router.get('/file/*', function (req, res) {
-    var stream = fs.createReadStream(decodeURI(req.url.substring(7)));
+    var stream = fs.createReadStream(decodeURI(req.url.substring(5)));
     stream.pipe(res);
   });
   router.get('/update', function (req, res) {
