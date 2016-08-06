@@ -3,7 +3,8 @@
 const electron = require('electron');
 const {
   app,
-  BrowserWindow
+  BrowserWindow,
+  dialog
 } = electron;
 
 app.on('ready', () => {
@@ -21,3 +22,6 @@ app.on('ready', () => {
   });
   app.on('window-all-closed', () => {});
 });
+dialog.showErrorBox = function(title, content) {
+    console.log(`${title}\n${content}`);
+};

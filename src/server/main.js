@@ -20,7 +20,7 @@ module.exports = function () {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded());
   app.use(cookieParser());
-  //app.use('/file',express.static(path.join(config.path)));
+  app.use('/files',express.static(path.join(config.path)));
 
   app.use('/', files);
 

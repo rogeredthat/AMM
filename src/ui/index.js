@@ -6,7 +6,7 @@ $('input').keydown(function(e) {
 
 let FilePopulation;
 //File List
-(function() {
+function loadPopulation() {
     let xhttp = new XMLHttpRequest();
     xhttp.onload = () => {
         if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) {
@@ -14,10 +14,10 @@ let FilePopulation;
             reflectFilePopulation();
         }
     }
-    xhttp.open('GET', "http://localhost:3000/files");
+    xhttp.open('GET', "http://localhost:5000/index");
     xhttp.send();
-})();
-
+};
+loadPopulation();
 var playlistObject = (file) => {
     console.log(file);
     let listItem = document.createElement('li');
@@ -401,7 +401,6 @@ function nextSong() {
     if ($elem && $url !== undefined) {
         $('#playlist>.list>li').removeClass('active');
         $elem.addClass('active');
-        curtags.tags.title = $elem.html();
         playMySong($url);
         refreshInfo();
         fuckitup();
