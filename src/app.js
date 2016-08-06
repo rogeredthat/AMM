@@ -15,15 +15,10 @@ app.on('ready', () => {
 
   var expressserver = require('./server/main');
 
-  expressserver.set('port', process.env.PORT || 3000);
+  expressserver.set('port', process.env.PORT || 5000);
 
   var server = expressserver.listen(expressserver.get('port'), function () {
     console.log('Express server listening on port ' + server.address().port);
-    let fuckingWindow = new BrowserWindow({
-      width: 400,
-      height: 60
-    });
-    fuckingWindow.loadURL('http://localhost:3000');
   });
   app.on('window-all-closed', () => {});
 
