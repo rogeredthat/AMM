@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 module.exports = function () {
   var express = require('express');
   var path = require('path');

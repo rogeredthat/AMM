@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 const electron = require('electron');
 const {
   app,
@@ -25,4 +27,4 @@ app.on('ready', () => {
   });
   app.on('window-all-closed', () => {});
 
-}); >>> >>> > server
+});

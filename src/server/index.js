@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 module.exports = function () {
   var dir = require('../../config.json');
   var fs = require('fs');
@@ -26,19 +28,19 @@ module.exports = function () {
             onError: (dat) => {
               console.log(dat);
             }
-          })
+          });
         }
-      })
-    })
-  }
+      });
+    });
+  };
 
   var returnIndex = function () {
     return listing;
-  }
+  };
 
   return {
     updateIndex: updateIndex,
     returnIndex: returnIndex,
-  }
+  };
 
 }();

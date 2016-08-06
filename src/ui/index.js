@@ -65,7 +65,8 @@ var analyser = context.createAnalyser();
 var gainNode = context.createGain();
 var buffer = context.createMediaElementSource(audio);
 
-spectrum = [], currentPoints = [];
+var spectrum = [];
+var currentPoints = [];
 deg = Math.PI / 128;
 phase = 0;
 for (i = 0; i < 256; i++) {
@@ -114,7 +115,7 @@ function Init(songTitle) {
     if (volChange--) {
       ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
     }
-    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)"
+    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
     CurrentRad += (AimedRad - CurrentRad) / 10;
     ctx.beginPath();
     ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, 0, 2 * Math.PI);
@@ -133,7 +134,7 @@ function Init(songTitle) {
       spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
       //spectrum[i].y = Math.min(spectrum[i].y,30);
     }
-  };
+  }
   visualize();
 
 
@@ -189,7 +190,7 @@ function draw() {
   ctx.globalAlpha = 0.2;
   ctx.lineWidth = 1;
   for (i = 0; i < currentPoints.length; i++) {
-    if (i % 1 == 0) {
+    if (i % 1 === 0) {
       j = i + 10;
       ctx.beginPath();
       //for seeker
@@ -253,7 +254,7 @@ $(palette).click(function (e) {
 
 $('#tab').dblclick(function () {
   $('#player').toggleClass('active');
-})
+});
 
 $('#playlist>.list>li').dblclick(function () {
   playMySong($(this).attr("name"));
@@ -347,18 +348,18 @@ shortcut.add("Space", function () {
 
 searchInput.onfocus = function () {
 
-}
+};
 searchInput.onblur = function () {
   $('#search_wrapper').removeClass('active');
   $('#search_button').removeClass('active');
-}
+};
 
 var playIcon = document.getElementById("playIcon");
 var pauseIcon = document.getElementById("pauseIcon");
 //play_pause n shit
 nowPlaying.getElementsByClassName('overlay')[0].onclick = function () {
   playPause();
-}
+};
 
 function playPause() {
   if ($(canvas).hasClass('active')) {
@@ -373,36 +374,36 @@ function playPause() {
 audio.onpause = function () {
   playIcon.style.display = 'none';
   pauseIcon.style.display = 'block';
-}
+};
 audio.onplay = function () {
   playIcon.style.display = 'block';
   pauseIcon.style.display = 'none';
-}
+};
 audio.onended = nextSong;
 
 function nextSong() {
   var $elem = $('#playlist>.list>li.active').next();
   var $url = $elem.attr("name");
-  if ($elem && $url != undefined) {
+  if ($elem && $url !== undefined) {
     $('#playlist>.list>li').removeClass('active');
     $elem.addClass('active');
     curtags.tags.title = $elem.html();
     playMySong($url);
     refreshInfo();
-    fuckitup()
+    fuckitup();
   }
 }
 
 function prevSong() {
   var $elem = $('#playlist>.list>li.active').prev();
   var $url = $elem.attr("name");
-  if ($elem && $url != undefined) {
+  if ($elem && $url !== undefined) {
     $('#playlist>.list>li').removeClass('active');
     $elem.addClass('active');
     curtags.tags.title = $elem.html();
     playMySong($url);
     refreshInfo();
-    fuckitup()
+    fuckitup();
   }
 }
 
@@ -415,7 +416,7 @@ function volumescroll(e) {
 }
 
 //workaound for volume change by mouse wheel code for firefox
-var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel" //FF doesn't recognize mousewheel as of FF3.x
+var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; //FF doesn't recognize mousewheel as of FF3.x
 if (document.attachEvent) { //if IE (and Opera depending on user setting)
   document.attachEvent("on" + mousewheelevt, function (e) {
     newVol = gainNode.gain.value + (e.wheelDelta / 2400);
@@ -424,11 +425,11 @@ if (document.attachEvent) { //if IE (and Opera depending on user setting)
     //hairoffset=hairoffset+Math.sign(e.wheelDelta)
     /*wafer = 40000;*/
     gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
-  })
+  });
 } else if (document.addEventListener) { //WC3 browsers
   document.addEventListener(mousewheelevt, function (e) {
     var scrolldelta = e.wheelDelta;
-    if (scrolldelta == undefined) {
+    if (scrolldelta === undefined) {
       scrolldelta = -e.detail * 40;
     }
     newVol = gainNode.gain.value + (scrolldelta / 2400);
@@ -504,7 +505,7 @@ function addToPlay() {
       title.innerHTML = tag.tags.title;
       artist.innerHTML = tag.tags.artist;
       album.innerHTML = tag.tags.album;
-      if (tag.tags.picture != undefined) {
+      if (tag.tags.picture !== undefined) {
         var base64String = "";
         for (var i = 0; i < tag.tags.picture.data.length; i++) {
           base64String += String.fromCharCode(tag.tags.picture.data[i]);
@@ -534,7 +535,7 @@ audio.onloadeddata = function () {
   window.setTimeout(function () {
     $('#meta').removeClass('active');
   }, 5000);
-}
+};
 
 document.body.ondragover = function () {
   $('#tray').addClass('active');
@@ -548,7 +549,7 @@ document.body.ondrop = function () {
 function fuckitup() {
   $('#canvas').addClass('next');
   setTimeout(function () {
-    $('#canvas').removeClass('next')
+    $('#canvas').removeClass('next');
   }, 500);
 }
 
