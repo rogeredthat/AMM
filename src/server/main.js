@@ -7,8 +7,8 @@ module.exports = function () {
   var logger = require('morgan');
   var cookieParser = require('cookie-parser');
   var bodyParser = require('body-parser');
-  var routes = require('./hello');
-
+  var files = require('./files');
+  var config = require('../../config.json');
   var app = express();
 
   // view engine setup
@@ -20,9 +20,9 @@ module.exports = function () {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded());
   app.use(cookieParser());
-  app.use(express.static(path.join(__dirname, 'public')));
+  //app.use('/file',express.static(path.join(config.path)));
 
-  app.use('/', routes);
+  app.use('/', files);
 
   /// catch 404 and forwarding to error handler
   app.use(function (req, res, next) {

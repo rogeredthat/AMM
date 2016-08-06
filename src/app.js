@@ -14,7 +14,7 @@ app.on('ready', () => {
   mainWindow.loadURL('file://' + __dirname + '/ui/index.html');
   var expressserver = require('./server/main');
 
-  expressserver.set('port', process.env.PORT || 3000);
+  expressserver.set('port', process.env.PORT || 5000);
 
   var server = expressserver.listen(expressserver.get('port'), function () {
     console.log('Express server listening on port ' + server.address().port);
