@@ -21,7 +21,7 @@ module.exports = function () {
               obj.title = dat.tags.title;
               obj.artist = dat.tags.artist;
               obj.album = dat.tags.album;
-              obj.picture = dat.tags.picture;
+              //obj.picture = dat.tags.picture;
               obj.year = dat.tags.year;
               listing.push(obj);
             },
