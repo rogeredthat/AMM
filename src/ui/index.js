@@ -24,7 +24,7 @@ var playlistObject = (file) => {
     let label = document.createElement('span');
     $(listItem).attr('name', file.url);
     listItem.appendChild(label);
-    label.innerHTML = file.title;
+    label.innerHTML = file.title || file.url.split('/').pop();
     console.log(listItem);
     return listItem;
 }
@@ -102,6 +102,7 @@ for (i = 0; i < 256; i++) {
 }
 
 function playMySong(songTitle) {
+    // songTitle = songTitle;
     audio.src = songTitle;
 }
 
@@ -156,7 +157,7 @@ function Init(songTitle) {
             //spectrum[i].y = Math.min(spectrum[i].y,30);
         }
     }
-    visualize();
+    // visualize();
 
 
 }
@@ -232,7 +233,7 @@ function draw() {
 
 
 }
-draw();
+// draw();
 
 
 //Sidebar Functions
@@ -284,13 +285,7 @@ shortcut.add("p", function(e) {
     'disable_in_input': true
 });
 
-shortcut.add("right", function() {
-    $('#search_button').click();
-    searchInput.focus();
-}, {
-    'type': 'keydown',
-    'disable_in_input': true
-});
+
 
 shortcut.add("Shift+right", function() {
     audio.currentTime += 3;
@@ -430,27 +425,20 @@ function volumescroll(e) {
 
 //workaound for volume change by mouse wheel code for firefox
 var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; //FF doesn't recognize mousewheel as of FF3.x
-if (document.attachEvent) { //if IE (and Opera depending on user setting)
-    document.attachEvent("on" + mousewheelevt, function(e) {
+if (nowPlaying.attachEvent) { //if IE (and Opera depending on user setting)
+    nowPlaying.attachEvent("on" + mousewheelevt, function(e) {
         newVol = gainNode.gain.value + (e.wheelDelta / 2400);
         volChange = 200;
-        console.log(e);
-        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
-        /*wafer = 40000;*/
         gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
     });
-} else if (document.addEventListener) { //WC3 browsers
-    document.addEventListener(mousewheelevt, function(e) {
+} else if (nowPlaying.addEventListener) { //WC3 browsers
+    nowPlaying.addEventListener(mousewheelevt, function(e) {
         var scrolldelta = e.wheelDelta;
         if (scrolldelta === undefined) {
             scrolldelta = -e.detail * 40;
         }
         newVol = gainNode.gain.value + (scrolldelta / 2400);
-        console.log(e.detail);
-        console.log(e);
         volChange = 200;
-        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
-        /*wafer = 40000;*/
         gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
     }, false);
 }
@@ -506,6 +494,11 @@ function addToPlay() {
     console.log(fileURL);
     audio.src = fileURL;
     // From remote host
+    loadTags(file);
+    audio.currentTime = 0;
+}
+
+function loadTags(file) {
     jsmediatags.read(file, {
         onSuccess: function(tag) {
             console.log(tag);
@@ -514,7 +507,7 @@ function addToPlay() {
             var artist = document.getElementById('artist');
             var album = document.getElementById('album');
             var maincoverart = document.getElementById('maincoverart');
-            var dataUrl = "landing.img/default.png";
+            var dataUrl = "img/default.png";
             title.innerHTML = tag.tags.title;
             artist.innerHTML = tag.tags.artist;
             album.innerHTML = tag.tags.album;
@@ -531,9 +524,7 @@ function addToPlay() {
             console.log(error);
         }
     });
-    audio.currentTime = 0;
 }
-
 $('#meta').click(function() {
     $(this).toggleClass('active');
     refreshInfo();
