@@ -4,6 +4,13 @@ $('input').keydown(function(e) {
     }
 });
 
+window.onfocus = function() {
+  _drawing = true;
+  window.requestAnimationFrame(draw);
+}
+window.onblur = function() {
+  _drawing = false;
+}
 function updatePopulation() {
     let xhttp = new XMLHttpRequest();
     xhttp.onload = () => {
@@ -21,7 +28,7 @@ let FilePopulation;
 function loadPopulation() {
     let xhttp = new XMLHttpRequest();
     xhttp.onload = () => {
-        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200 && xhttp.status != 304) {
+        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) {
             if (JSON.stringify(FilePopulation) !== xhttp.responseText) {
                 FilePopulation = JSON.parse(xhttp.responseText);
                 reflectFilePopulation();
@@ -33,7 +40,7 @@ function loadPopulation() {
 };
 // setInterval(loadPopulation, 10000);
 
-var playlistObject = (file) => {
+var LibraryObject = (file) => {
     let listItem = document.createElement('li');
     let artist = document.createElement('span');
     let album = document.createElement('span');
@@ -44,25 +51,32 @@ var playlistObject = (file) => {
     album.innerHTML = file.album || 'Unknown';
     title.classList.add('title');
     title.innerHTML = file.title || file.url.split('/').pop();
-    $(listItem).attr('name', file.url);
     listItem.appendChild(title);
     listItem.appendChild(artist);
     listItem.appendChild(album);
-    console.log(listItem);
+    listItem.addEventListener('dblclick',function(){
+      $('#playlist .list').append(PlaylistObject(file));
+    })
     return listItem;
 }
 
 var reflectFilePopulation = () => {
     $('#library .list').empty();
     FilePopulation.forEach((file) => {
-        $('#library .list').append($(playlistObject(file)));
+        $('#library .list').append($(LibraryObject(file)));
     });
-    $('#library>.list>li').dblclick(function() {
+}
+
+var PlaylistObject = (file) => {
+  let $listItem = $('<li/>');
+  $listItem.append($('<span>'+(file.title||file.url.split('/').pop())+'</span>'));
+  $listItem.attr('name', file.url);
+  $listItem.dblclick(function() {
         playMySong($(this).attr("name"));
         $('#playlist>.list>li').removeClass('active');
         $(this).addClass('active');
-        curtags.tags.title = $(this).html();
     });
+  return $listItem;
 }
 
 //Visualization
@@ -126,6 +140,7 @@ for (i = 0; i < 256; i++) {
 }
 
 function playMySong(songTitle) {
+    // songTitle = songTitle;
     audio.src = songTitle;
 }
 
@@ -146,38 +161,30 @@ function Init(songTitle) {
     var dataArray2 = new Uint8Array(bufferLength);
 
     function visualize() {
-        analyser.getByteTimeDomainData(dataArray);
-        analyser.getByteFrequencyData(dataArray2);
-        for (i = 0, avg = 0; i < dataArray2.length; i++) {
-            avg += dataArray2[i];
-        }
-        avg /= dataArray2.length;
-        avg = Math.pow(avg, 1.5);
-        avg /= 30;
-        AimedRad = 40 + (playerRad + avg) * gainNode.gain.value;
         window.requestAnimationFrame(visualize);
-        ctx.lineWidth = 1.5;
-        if (volChange--) {
-            ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
-        }
-        ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-        CurrentRad += (AimedRad - CurrentRad) / 10;
-        ctx.beginPath();
-        ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fillStyle = 'rgb(0,0,0)';
-        ctx.globalAlpha = 1;
-        ctx.fill();
-        ctx.stroke();
-        for (i = 0; i < spectrum.length / 2; i++) {
-            spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
-            //spectrum[i].y = Math.min(spectrum[i].y,30);
-        }
-        for (i = spectrum.length / 2; i < spectrum.length; i++) {
-            spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
-            spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
-            //spectrum[i].y = Math.min(spectrum[i].y,30);
+        if (_drawing) {
+            analyser.getByteTimeDomainData(dataArray);
+            analyser.getByteFrequencyData(dataArray2);
+            for (i = 0, avg = 0; i < dataArray2.length; i++) {
+                avg += dataArray2[i];
+            }
+            avg /= dataArray2.length;
+            avg = Math.pow(avg, 1.5);
+            avg /= 30;
+            AimedRad = 40 + (playerRad + avg) * gainNode.gain.value;
+            ctx.lineWidth = 1.5;
+            CurrentRad += (AimedRad - CurrentRad) / 10;
+            //Circle code was initially Here
+            for (i = 0; i < spectrum.length / 2; i++) {
+                spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.cos((deg * i) + phase);
+                spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[i] / 50, 3)) * Math.sin((deg * i) + phase);
+                //spectrum[i].y = Math.min(spectrum[i].y,30);
+            }
+            for (i = spectrum.length / 2; i < spectrum.length; i++) {
+                spectrum[i].x = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.cos((deg * i) + phase);
+                spectrum[i].y = (CurrentRad * 1.0 + Math.pow(dataArray[(spectrum.length - 1) - i] / 50, 3)) * Math.sin((deg * i) + phase);
+                //spectrum[i].y = Math.min(spectrum[i].y,30);
+            }
         }
     }
     visualize();
@@ -235,26 +242,40 @@ function draw() {
     //Curl's hair
     ctx.globalAlpha = 0.2;
     ctx.lineWidth = 1;
-    for (i = 0; i < currentPoints.length; i++) {
-        if (i % 1 === 0) {
-            j = i + 10;
-            ctx.beginPath();
-            //for seeker
-            if (i < (len = 256 * (audio.currentTime / audio.duration))) {
-                ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-                ctx.globalAlpha = 0.3;
-            } else {
-                ctx.globalAlpha = 0.4;
-                ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
-            }
-            ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-            ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
-            ctx.closePath();
-            ctx.stroke();
-        }
+    let len = Math.round(256 * (audio.currentTime / audio.duration));
+    ctx.beginPath();
+    for (i = 0; i < len; i++) {
+      j = i + 10;
+      //for seeker
+      ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+      ctx.globalAlpha = 0.3;
+      ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+      ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
     }
-
-
+    ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath();
+    for (i = len; i < currentPoints.length; i++) {
+      j = i + 10;
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)"; 
+      ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+      ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.lineWidth = 1.5;
+    if (volChange--) {
+      ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
+    }
+    ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+    ctx.beginPath();
+    ctx.arc(visual.w / 2, visual.h / 2, CurrentRad, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.globalAlpha = 1;
+    ctx.fill();
+    ctx.stroke();
 }
 draw();
 
@@ -301,8 +322,10 @@ $('#tab').dblclick(function() {
     $('#player').toggleClass('active');
     if ($('#player').hasClass('active'))
         _drawing = false;
-    else
+    else {
         _drawing = true;
+        window.requestAnimationFrame(draw);
+    }
 });
 
 shortcut.add("p", function(e) {
@@ -312,13 +335,7 @@ shortcut.add("p", function(e) {
     'disable_in_input': true
 });
 
-shortcut.add("right", function() {
-    $('#search_button').click();
-    searchInput.focus();
-}, {
-    'type': 'keydown',
-    'disable_in_input': true
-});
+
 
 shortcut.add("Shift+right", function() {
     audio.currentTime += 3;
@@ -355,11 +372,14 @@ shortcut.add("Ctrl+Up", function() {
 shortcut.add("Esc", function() {
     $('#player').toggleClass('active');
     if ($('#player').hasClass('active')) {
+        _drawing = false;
         $('#playlist').removeClass('active');
         $('#search_wrapper').removeClass('active');
         $('#sideControls>li').removeClass('active');
         searchInput.focus();
     } else {
+        _drawing = true;
+        window.requestAnimationFrame(draw);
         searchInput.blur();
     }
 }, {
@@ -462,9 +482,6 @@ if (nowPlaying.attachEvent) { //if IE (and Opera depending on user setting)
     nowPlaying.attachEvent("on" + mousewheelevt, function(e) {
         newVol = gainNode.gain.value + (e.wheelDelta / 2400);
         volChange = 200;
-        console.log(e);
-        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
-        /*wafer = 40000;*/
         gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
     });
 } else if (nowPlaying.addEventListener) { //WC3 browsers
@@ -474,11 +491,7 @@ if (nowPlaying.attachEvent) { //if IE (and Opera depending on user setting)
             scrolldelta = -e.detail * 40;
         }
         newVol = gainNode.gain.value + (scrolldelta / 2400);
-        console.log(e.detail);
-        console.log(e);
         volChange = 200;
-        //hairoffset=hairoffset+Math.sign(e.wheelDelta)
-        /*wafer = 40000;*/
         gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
     }, false);
 }
@@ -534,6 +547,11 @@ function addToPlay() {
     console.log(fileURL);
     audio.src = fileURL;
     // From remote host
+    loadTags(file);
+    audio.currentTime = 0;
+}
+
+function loadTags(file) {
     jsmediatags.read(file, {
         onSuccess: function(tag) {
             console.log(tag);
@@ -542,7 +560,7 @@ function addToPlay() {
             var artist = document.getElementById('artist');
             var album = document.getElementById('album');
             var maincoverart = document.getElementById('maincoverart');
-            var dataUrl = "landing.img/default.png";
+            var dataUrl = "img/default.png";
             title.innerHTML = tag.tags.title;
             artist.innerHTML = tag.tags.artist;
             album.innerHTML = tag.tags.album;
@@ -559,9 +577,7 @@ function addToPlay() {
             console.log(error);
         }
     });
-    audio.currentTime = 0;
 }
-
 $('#meta').click(function() {
     $(this).toggleClass('active');
     refreshInfo();
