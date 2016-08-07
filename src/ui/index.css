@@ -65,11 +65,12 @@ body {
 
 #sidebar {
     position: relative;
-    width: 25vw;
-    margin-left: -25vw;
+    width: 100vw;
+    margin-left: -100vw;
     height: 100%;
     background: #fff;
     z-index: +15;
+    display:flex;
     transition: all 0.4s cubic-bezier(0, 0, 0, 1);
 }
 
@@ -78,8 +79,8 @@ body {
     z-index: +10;
     height: 10vh;
     margin-left: 0%;
-    position: relative;
-    width: 100%;
+    position: absolute;
+    width: 25vw;
     box-sizing: border-box;
     padding: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -109,72 +110,81 @@ body {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
-#search_wrapper>#suggestionWrapper {
-    position: absolute;
-    min-height: 100px;
-    top: 100%;
-    z-index: +10;
-    background: #191919;
-    max-height: 60vh;
-    left: 0;
-    display: none;
+#library {
+    display:block;
+    min-width: 25vw;
     width: 25vw;
-    overflow: hidden;
-    padding-bottom: 6vh;
-    box-shadow: 5px 0px 10px 0px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.5s 1 cubic-bezier(0, 0, 0, 1);
+    height: 100vh;
+    overflow-y: auto;
 }
-
-#suggestionWrapper.active {
-    display: block;
+#library > ul {
+    margin-top:10vh;
+    padding:0px;
 }
-
-#suggestionWrapper>li {
-    width: 100%;
-    height: 8vh;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    line-height: 6vh;
-    list-style-type: none;
-    padding: 1vh 10px;
+#library > ul > li {
+    list-style-type:none;
+    display:block;
     position: relative;
+    width:100%;
+    box-sizing:border-box;
+    padding:5px 10px;
+    padding-bottom: 0px;
+    font-size: 0px;
+    height:50px;
+    overflow:hidden;
+    white-space: nowrap;
+    transition:all 0.1s;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+} 
+#library > ul > li:nth-child(even){
+    background:rgba(0,0,0,0.05);
+}
+#library > ul > li:hover {
+    z-index: +10;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.1),0px 15px 10px -10px rgba(0,0,0,0.1);
+}
+#library > ul > li > .artist:hover, #library > ul > li > .album:hover {
+    background:rgba(0,0,0,0.05);
+}
+#library > ul > li > .title{ 
+    line-height: 25px;
+    font-size: 14px;
+    height: 25px;
+    display: block;
+    width: 100%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#library > ul > li > .artist, #library > ul > li > .album {
+    line-height: 20px;
+    font-size: 12px;
+    width: 50%;
+    height: 20px;
+    border-top:1px solid rgba(0,0,0,0.05);
+    border-right:1px solid rgba(0,0,0,0.05);
+    display: inline-block;
     box-sizing: border-box;
+    text-align: center;
+    color:#777;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
-#suggestionWrapper>li:hover {
-    background: #222;
+#library > ul > li > .album {
+    border-right: none;
 }
-
-@keyframes slideDown {
-    0% {
-        min-height: 0px;
-        height: 0px;
-    }
-}
-
-@-webkit-keyframes slideDown {
-    0% {
-        height: 0px;
-        min-height: 0px;
-    }
-}
-
 #playlist {
     display: block;
-    width: 25vw;
-    float: left;
+    flex-grow: 1;
     min-height: 100px;
-    position: absolute;
+    position: relative;
     background: #f0f0f0;
-    top: 10vh;
-    right: 0;
     transition:all 0.4s cubic-bezier(0, 0, 0, 1);    
 }
-
 #playlist.active
 {
     margin-right: -25vw;
 }
-
 #playlist>.list
 {
     max-height: 75vh;
@@ -202,7 +212,7 @@ body {
 #playlist>span {
     position: relative;
     height: 10vh;
-    width: 25vw;
+    width: 100%;
     top:0;
     display: block;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -361,6 +371,7 @@ li:focus
     width: 25vw;
     display: block;
     transition:none;
+    color:#777;
 }
 
 #playlist .controls>div
@@ -371,14 +382,17 @@ li:focus
     text-align: center;
     display: inline-block;
     font-size: 2.5vh;
-    color:#777;
 }
-
-#playlist .controls>div:hover
+.clickable {
+    transition: transform 0.2s;
+}
+.clickable:hover
 {
     color:#333;
 }
-
+.clickable:active {
+    transform:scale(0.9);
+}
 #player #now_playing>.underlay {
     /*background-image: url("landing.img/Motion.jpg");*/
     width: 100vw;

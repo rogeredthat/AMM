@@ -1,120 +1,128 @@
 <html>
-
-<head>
-    <title>Player - CURL</title>
-    <link rel="stylesheet" type="text/css" href="index.css" />
-    <link rel="stylesheet" type="text/css" href="../lib/material-icons/font.css" />
-    <script src="../lib/shortcuts.js"></script>
-    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-    <script src="../lib/jquery.min.js"></script>
-    <script src="../lib/jquery-ui.min.js"></script>
-    <script src="../lib/jsmediatags.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../lib/jquery-ui.css" />
-    <link rel="icon" type="img/png" href="landing.img/favicon.png" />
-</head>
-
-<body>
-    <audio autoplay>
-    </audio>
-    <div id="player">
-        <div id="sidebar">
-            <div id="search_wrapper">
-                <input type="text" tabindex="1" value="Teen" placeholder="Search" id="search_item" />
-                <div id="suggestionWrapper">
-                    <li>
-                        <div class="albumArt"></div>
-                        <div class="details">
-                            <span class="title">Smells Like Teen Spirit</span>
-                            <span class="extra">
-                                <span class="album">Nevermind</span> &#8226;
-                            <span class="artist">Nirvana</span>
-                            </span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="albumArt"></div>
-                        <div class="details">
-                            <span class="title">TeenWolf</span>
-                            <span class="extra">
-                                <span class="album">Artist</span> &#8226;
-                            <span class="artist">2015</span>
-                            </span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="albumArt"></div>
-                        <div class="details">
-                            <span class="title">Teenage Dreams</span>
-                            <span class="extra">
-                                <span class="album">Teenage Dreams</span> &#8226;
-                            <span class="artist">Katy Perry</span>
-                            </span>
-                        </div>
-                    </li>
+    <head>
+        <title>Player - CURL</title>
+        <link rel="stylesheet" type="text/css" href="index.css"/>
+        <link rel="stylesheet" type="text/css" href="../lib/material-icons/font.css"/>
+        <script src="../lib/shortcuts.js"></script>
+        <script>
+            if (typeof module === 'object') {
+                window.module = module;
+                module = undefined;
+            }
+        </script>
+        <script src="../lib/jquery.min.js"></script>
+        <script src="../lib/jquery-ui.min.js"></script>
+        <script src="../lib/jsmediatags.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../lib/jquery-ui.css"/>
+        <link rel="icon" type="img/png" href="landing.img/favicon.png"/>
+    </head>
+    <body>
+        <audio autoplay></audio>
+        <div id="player">
+            <div id="sidebar">
+                <div id="library">
+                    <div id="search_wrapper">
+                        <input type="text" tabindex="1" value="Teen" placeholder="Search" id="search_item"/>
+                    </div>
+                    <ul class="list">
+                        <li>
+                            <span class="title">Seduction</span>
+                            <span class='artist'>Eminem</span>
+                            <span class='album'>Recovery</span>
+                        </li>
+                        <li>
+                            <span class="title">Colors</span>
+                            <span class='artist'>Halsey</span>
+                            <span class='album'>Badlands</span>
+                        </li>
+                        <li>
+                            <span class="title">Coming Down</span>
+                            <span class='artist'>Halsey</span>
+                            <span class='album'>Badlands</span>
+                        </li>
+                    </ul>
+                </div>
+                <div id="playlist" tabindex="0">
+                    <span>
+                        <span>Playlist</span>
+                        <i class="material-icons clickable" onclick="updatePopulation()">refresh</i>
+                    </span>
+                    <div class='controls'>
+                        <div tabindex="2" class="material-icons clickable" id="shuffle">shuffle</div>
+                        <div tabindex="2" class="material-icons clickable" id="repeat">repeat</div>
+                        <div tabindex="2" class="material-icons clickable" id="clear_playlist">clear_all</div>
+                    </div>
+                    <ul class="list">
+                        <li name="Fix You.mp3" class="active">
+                            <span>Fix You</span>
+                        </li>
+                        <li name="21Guns.mp3">
+                            <span>21 Guns</span>
+                        </li>
+                        <li name="Clocks.mp3">
+                            <span>Clocks</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div id="playlist" tabindex="0">
-                <span><span>Playlist</span><i class="material-icons">queue_music</i></span>
-                <div class='controls'>
-                    <div tabindex="2" class="material-icons" id="shuffle">shuffle</div>
-                    <div tabindex="2" class="material-icons" id="repeat">repeat</div>
-                    <div tabindex="2" class="material-icons" id="clear_playlist">clear_all</div>
+            <div id="now_playing">
+                <div class="underlay">
+                    <span class='title'></span>
                 </div>
-                <ul class="list">
-                    <li name="Fix You.mp3" class="active"><span>Fix You</span></li>
-                    <li name="21Guns.mp3"><span>21 Guns</span></li>
-                    <li name="Clocks.mp3"><span>Clocks</span></li>
-                </ul>
-            </div>
-        </div>
-        <div id="now_playing">
-            <div id="header"><span class="logo"></span></div>
-            <div class="underlay">
-                <span class='title'></span>
-            </div>
-            <canvas id="canvas" class="active"></canvas>
-            <div class="overlay">
-                <i id="playIcon" class="material-icons">play_arrow</i>
-                <i id="pauseIcon" style="display:none;" class="material-icons">pause</i>
-                <div id="seeker">
-                    <div id="seekBar"></div>
-                    <div id="seekChange"></div>
-                    <div id="seekHandle"></div>
+                <canvas id="canvas" class="active"></canvas>
+                <div class="overlay">
+                    <i id="playIcon" class="material-icons">play_arrow</i>
+                    <i id="pauseIcon" style="display:none;" class="material-icons">pause</i>
+                    <div id="seeker">
+                        <div id="seekBar"></div>
+                        <div id="seekChange"></div>
+                        <div id="seekHandle"></div>
+                    </div>
                 </div>
-            </div>
-            <div id="deafNet"></div>
-            <div id="sideControls">
-                <li tabindex="0" id="search_button"><i class="material-icons">search</i></li>
-                <li tabindex="0" id="playlist_toggle"><i class="material-icons">queue_music</i></li>
-                <li tabindex="0" id="equalizer"><i class="material-icons">equalizer</i></li>
-                <li tabindex="0" id="color_palette"><i class="material-icons">color_lens</i>
-                    <canvas tabindex="0" id="palette"></canvas>
-                </li>
-                <li id='tab'></li>
-                <li id="meta">
-                    <img id="maincoverart" src="img/default.png"s onclick="toggleInfo()" />
-                    <div id="infoflow">
-                        <div id="notseekbar">
-                            <span id="title" class="title">Young Blood</span>
-                            <span id="album" class="album">Passive Me Aggressive You</span>
-                            <span id="artist" class="artist">The Naked &amp; Famous</span>
-                        </div>
-                        <div class="seekbar">
-                            <div class='track'>
-                                <div class='progress'></div>
-                                <div class='handle'></div>
+                <div id="deafNet"></div>
+                <div id="sideControls">
+                    <li tabindex="0" id="search_button">
+                        <i class="material-icons">search</i>
+                    </li>
+                    <li tabindex="0" id="playlist_toggle">
+                        <i class="material-icons">queue_music</i>
+                    </li>
+                    <li tabindex="0" id="equalizer">
+                        <i class="material-icons">equalizer</i>
+                    </li>
+                    <li tabindex="0" id="color_palette">
+                        <i class="material-icons">color_lens</i>
+                        <canvas tabindex="0" id="palette"></canvas>
+                    </li>
+                    <li id='tab'></li>
+                    <li id="meta">
+                        <img id="maincoverart" src="img/default.png" s onclick="toggleInfo()"/>
+                        <div id="infoflow">
+                            <div id="notseekbar">
+                                <span id="title" class="title">Young Blood</span>
+                                <span id="album" class="album">Passive Me Aggressive You</span>
+                                <span id="artist" class="artist">The Naked &amp;Famous</span>
+                            </div>
+                            <div class="seekbar">
+                                <div class='track'>
+                                    <div class='progress'></div>
+                                    <div class='handle'></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="tray">
-        <input type="file" id="takeNew" accept="audio/*" onchange="addToPlay()" /> Incoming
-    </div>
-</body>
-<!--<script src="http://172.16.120.101/wrap/smartauth.js"></script>-->
-<script src="index.js"></script>
-<script>if (window.module) module = window.module;</script>
+        <div id="tray">
+            <input type="file" id="takeNew" accept="audio/*" onchange="addToPlay()"/>Incoming
+    
+        </div>
+    </body>
+    <!--<script src="http://172.16.120.101/wrap/smartauth.js"></script>-->
+    <script src="index.js"></script>
+    <script>
+        if (window.module)
+            module = window.module;
+    </script>
 </html>

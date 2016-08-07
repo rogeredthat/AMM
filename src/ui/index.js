@@ -4,37 +4,60 @@ $('input').keydown(function(e) {
     }
 });
 
+function updatePopulation() {
+    let xhttp = new XMLHttpRequest();
+    xhttp.onload = () => {
+        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) {
+            console.log('Done');
+            setTimeout(loadPopulation, 2000);
+        }
+    }
+    xhttp.open('GET', 'http://localhost:5000/update');
+    xhttp.send();
+};
+updatePopulation();
 let FilePopulation;
 //File List
 function loadPopulation() {
     let xhttp = new XMLHttpRequest();
     xhttp.onload = () => {
-        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) {
-            FilePopulation = JSON.parse(xhttp.responseText);
-            reflectFilePopulation();
+        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200 && xhttp.status != 304) {
+            if (JSON.stringify(FilePopulation) !== xhttp.responseText) {
+                FilePopulation = JSON.parse(xhttp.responseText);
+                reflectFilePopulation();
+            }
         }
     }
     xhttp.open('GET', "http://localhost:5000/index");
     xhttp.send();
 };
-loadPopulation();
+// setInterval(loadPopulation, 10000);
+
 var playlistObject = (file) => {
-    console.log(file);
     let listItem = document.createElement('li');
-    let label = document.createElement('span');
+    let artist = document.createElement('span');
+    let album = document.createElement('span');
+    let title = document.createElement('span');
+    artist.classList.add('artist');
+    artist.innerHTML = file.artist || 'Unknown';
+    album.classList.add('album');
+    album.innerHTML = file.album || 'Unknown';
+    title.classList.add('title');
+    title.innerHTML = file.title || file.url.split('/').pop();
     $(listItem).attr('name', file.url);
-    listItem.appendChild(label);
-    label.innerHTML = file.title;
+    listItem.appendChild(title);
+    listItem.appendChild(artist);
+    listItem.appendChild(album);
     console.log(listItem);
     return listItem;
 }
 
 var reflectFilePopulation = () => {
-    $('#playlist .list').empty();
+    $('#library .list').empty();
     FilePopulation.forEach((file) => {
-        $('#playlist .list').append($(playlistObject(file)));
+        $('#library .list').append($(playlistObject(file)));
     });
-    $('#playlist>.list>li').dblclick(function() {
+    $('#library>.list>li').dblclick(function() {
         playMySong($(this).attr("name"));
         $('#playlist>.list>li').removeClass('active');
         $(this).addClass('active');
@@ -43,6 +66,7 @@ var reflectFilePopulation = () => {
 }
 
 //Visualization
+var _drawing = true;
 var volChange = 0;
 var baseColor = 243;
 var flyout = false;
@@ -162,7 +186,8 @@ function Init(songTitle) {
 }
 
 function draw() {
-    window.requestAnimationFrame(draw);
+    if (_drawing)
+        window.requestAnimationFrame(draw);
     //hairoffset = Math.cos(avg / 100) * 10;
     ResizeCanvas();
     volChange = Math.max(volChange - 1, 0);
@@ -226,7 +251,6 @@ function draw() {
             ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
             ctx.closePath();
             ctx.stroke();
-
         }
     }
 
@@ -275,6 +299,10 @@ $(palette).click(function(e) {
 
 $('#tab').dblclick(function() {
     $('#player').toggleClass('active');
+    if ($('#player').hasClass('active'))
+        _drawing = false;
+    else
+        _drawing = true;
 });
 
 shortcut.add("p", function(e) {
@@ -430,8 +458,8 @@ function volumescroll(e) {
 
 //workaound for volume change by mouse wheel code for firefox
 var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; //FF doesn't recognize mousewheel as of FF3.x
-if (document.attachEvent) { //if IE (and Opera depending on user setting)
-    document.attachEvent("on" + mousewheelevt, function(e) {
+if (nowPlaying.attachEvent) { //if IE (and Opera depending on user setting)
+    nowPlaying.attachEvent("on" + mousewheelevt, function(e) {
         newVol = gainNode.gain.value + (e.wheelDelta / 2400);
         volChange = 200;
         console.log(e);
@@ -439,8 +467,8 @@ if (document.attachEvent) { //if IE (and Opera depending on user setting)
         /*wafer = 40000;*/
         gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
     });
-} else if (document.addEventListener) { //WC3 browsers
-    document.addEventListener(mousewheelevt, function(e) {
+} else if (nowPlaying.addEventListener) { //WC3 browsers
+    nowPlaying.addEventListener(mousewheelevt, function(e) {
         var scrolldelta = e.wheelDelta;
         if (scrolldelta === undefined) {
             scrolldelta = -e.detail * 40;
