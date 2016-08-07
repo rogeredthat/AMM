@@ -9,7 +9,7 @@ const {
 
 app.on('ready', () => {
   let mainWindow = new BrowserWindow({
-    autoHideMenuBar:true,
+    autoHideMenuBar: true,
   });
   mainWindow.maximize();
   mainWindow.loadURL('file://' + __dirname + '/ui/index.html');
@@ -22,6 +22,6 @@ app.on('ready', () => {
   });
   app.on('window-all-closed', () => {});
 });
-dialog.showErrorBox = function(title, content) {
-    console.log(`${title}\n${content}`);
+dialog.showErrorBox = function (title, content) {
+  console.log(`${title}\n${content}`);
 };
