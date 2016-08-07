@@ -69,13 +69,16 @@ var reflectFilePopulation = () => {
 }
 
 var PlaylistObject = (file) => {
-    if(audio.paused) {
-      audio.src = file.url;
-      audio.currentTime = 0;
-    }
+
     let $listItem = $('<li/>');
     $listItem.append($('<span>' + (file.title || file.url.split('/').pop()) + '</span>'));
     $listItem.attr('name', file.url);
+    if(audio.paused) {
+      audio.src = file.url;
+      audio.currentTime = 0;
+      $('#playlist .list>li').removeClass('active');
+      $listItem.addClass('active'); 
+    }
     $listItem.dblclick(function() {
         playMySong($(this).attr("name"));
         $('#playlist>.list>li').removeClass('active');
@@ -95,7 +98,6 @@ var nowPlaying = document.getElementById('now_playing');
 var canvas = document.getElementById('canvas');
 var palette = document.getElementById('palette');
 var audio = document.querySelectorAll('audio')[0];
-var infoflow = document.getElementById('infoflow');
 var ctx = canvas.getContext('2d');
 var avg = 0;
 var visual = {
@@ -452,8 +454,7 @@ function nextSong() {
     var $elem = $('#playlist>.list>li.active').next();
     var $url = $elem.attr("name");
     if ($elem && $url !== undefined) {
-        $('#playlist>.list>li').removeClass('active');
-        $elem.addClass('active');
+        $elem.addClass('active').siblings().removeClass('active');
         playMySong($url);
         refreshInfo();
         fuckitup();
@@ -464,8 +465,7 @@ function prevSong() {
     var $elem = $('#playlist>.list>li.active').prev();
     var $url = $elem.attr("name");
     if ($elem && $url !== undefined) {
-        $('#playlist>.list>li').removeClass('active');
-        $elem.addClass('active');
+        $elem.addClass('active').siblings().removeClass('active');
         curtags.tags.title = $elem.html();
         playMySong($url);
         refreshInfo();
@@ -651,11 +651,11 @@ $('#seekHandle').draggable({
 audio.addEventListener('timeupdate', pushSeek, false);
 
 function pushSeek() {
-    var pos = ((audio.currentTime / audio.duration) * $('#infoflow .track').width());
-    $('#infoflow .handle').css({
+    var pos = ((audio.currentTime / audio.duration) * $('#meta .seekbar .track').width());
+    $('#meta .seekbar .handle').css({
         left: pos
     });
-    $('#infoflow .progress').css({
+    $('#meta .seekbar .progress').css({
         width: pos
     });
 }
@@ -667,9 +667,9 @@ $('.handle').draggable({
         audio.removeEventListener('timeupdate', pushSeek, false);
     },
     drag: function() {
-        var pos = $('#infoflow .handle').position().left;
-        var time = pos / $('#infoflow .track').width() * audio.duration;
-        $('#infoflow .progress').css({
+        var pos = $('#meta .seekbar .handle').position().left;
+        var time = pos / $('#meta .seekbar .track').width() * audio.duration;
+        $('#meta .seekbar .progress').css({
             width: pos
         });
         audio.currentTime = time;
@@ -679,10 +679,10 @@ $('.handle').draggable({
     }
 });
 
-$('#infoflow .track').click(function(e) {
+$('#meta .seekbar .track').click(function(e) {
     var pos = e.pageX - $(this).offset().left;
-    $('#infoflow .progress').css({
+    $('#meta .seekbar .progress').css({
         width: pos
     });
-    audio.currentTime = (pos / $('#infoflow .track').width()) * audio.duration;
+    audio.currentTime = (pos / $('#meta .seekbar .track').width()) * audio.duration;
 });

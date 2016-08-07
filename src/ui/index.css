@@ -78,9 +78,9 @@ body {
     display: block;
     z-index: +10;
     height: 10vh;
-    margin-left: 0%;
+    width:25vw;
     position: absolute;
-    width: 25vw;
+    width: 100%;
     box-sizing: border-box;
     padding: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -90,7 +90,7 @@ body {
 
 #search_wrapper.active
 {
-    margin-left: 25vw;
+    margin-left: 100vw;
 }
 
 #search_item {
@@ -109,17 +109,17 @@ body {
 #search_item:focus {
     border-color: rgba(255, 255, 255, 0.3);
 }
-
 #library {
     display:block;
-    min-width: 25vw;
-    width: 25vw;
-    height: 100vh;
+    flex-grow: 1;
+    width:25vw;
+    height: 90vh;
+    position: relative;
     overflow-y: auto;
 }
 #library > ul {
-    margin-top:10vh;
     padding:0px;
+    margin-top:10vh;
 }
 #library > ul > li {
     list-style-type:none;
@@ -175,8 +175,9 @@ body {
 }
 #playlist {
     display: block;
-    flex-grow: 1;
-    min-height: 100px;
+    width: 75vw;
+    height: 90vh;
+    overflow-y: auto;
     position: relative;
     background: #f0f0f0;
     transition:all 0.4s cubic-bezier(0, 0, 0, 1);    
@@ -184,6 +185,7 @@ body {
 #playlist.active
 {
     margin-right: -25vw;
+    width:25vw;
 }
 #playlist>.list
 {
@@ -517,61 +519,48 @@ li:focus
     height: 50vh;
 }
 
-#sideControls>li#meta
+#meta
 {
-    height: 20vh;
-    width: 20vh;
-    position: absolute;
-    bottom: 0;
+    height: 0vh;
+    width: 100vw;
+    position: fixed;
+    top:90vh;
     left: 0;
+    z-index: +100;
+    overflow: hidden;
+    display: flex;
+    background:#fff;
+    color:#000;
+    transition: all 0.5s cubic-bezier(0,0,0,1);
 }
-
+#player.active #sidebar>#meta {
+    height: 10vh;
+    transition-delay: 0.4s;
+}
 #meta>img
 {
     height: 10vh;
     width: 10vh;
-    position: absolute;
-    bottom:0;
-    transition:all 0.3s cubic-bezier(0,0,0,1);
-    left: 0;
-}
-
-#sideControls>li#meta.active
-{
-    margin: 0;
-}
-
-#infoflow
-{
-    position: absolute;
-    height: 10vh;
-    left: 10vh;
-    bottom:0vh;
-    display: block;
-    width: 80vw;
-    opacity: 0;
-    box-sizing: border-box;
-    transition:all 0.3s cubic-bezier(0,0,0,1);
-    padding:0px 20px;
-}
-
-#notseekbar{
-    height: 60%;
-    float: left;
-    clear: both;
-    display:block;
-}
-
-#infoflow>.seekbar{
-    height: 40%;
-    clear: both;
-    float: left;
-    display:block;
-    width: 40vw;
     position: relative;
+    margin-right:10px;
+    transition:all 0.3s cubic-bezier(0,0,0,1);
 }
-
-#infoflow>.seekbar>.track
+#notseekbar{
+    height: 100%;
+    display:block;
+    max-width: 20vw;
+    margin:0px 10px;
+    box-sizing: border-box;
+    padding: 1vh 0px;
+}
+.seekbar{
+    height: 100%;
+    display:block;
+    flex-grow: 1;
+    position: relative;
+    margin:0px 20px;
+}
+.seekbar>.track
 {
     width:100%;
     height:2px;
@@ -579,23 +568,23 @@ li:focus
     cursor: pointer;
     position: absolute;
     margin-top:-1px;
-    background-color:rgba(255,255,255,0.4);
+    background-color:rgba(0,0,0,0.4);
 }
 
-#infoflow>.seekbar>.track>.progress
+.seekbar>.track>.progress
 {
     height:100%;
     top:0;
     left: 0;
     position: absolute;
-    background: #fff;
+    background: #000;
     cursor:pointer;
 }
 
-#infoflow>.seekbar>.track>.handle
+.seekbar>.track>.handle
 {
     width:14px;
-    background:#fff;
+    background:#000;
     position: absolute;
     height:14px;
     cursor: pointer;
@@ -606,49 +595,32 @@ li:focus
     transition:transform 0.1s;
 }
 
-#infoflow:hover>.seekbar>.track>.handle
+.seekbar>.track>.handle
 {
     transform: scale(1);
 }
-
-#meta:hover #infoflow,#meta.active #infoflow
-{
-    opacity: 1;
-    left: 20vh;
-    height: 20vh;
-    padding: 2vh 20px;
-    background:linear-gradient(to left,transparent 30%,rgba(255,255,255,0.1) 100%);
-}
-
-#meta:hover>img,#meta.active>img
-{
-    height: 20vh;
-    width: 20vh;
-}
-
-#meta>div>div>span
+#meta>div>span
 {
     float:left;
     position: relative;
     display: inline-flex;
     white-space: nowrap;
-    color:#e0e0e0;
 }
 
-#meta>div>div>span.title
-{
-    height: 4vh;
-    line-height: 4vh;
-    font-size: 2.5vh;
-    letter-spacing: 0.06em;
-}
-#meta>div>div>span.album,#meta>div>div>span.artist
+#meta>div>span.title
 {
     height: 3vh;
-    float: left;
-    clear: both;
     line-height: 3vh;
     font-size: 2vh;
+    letter-spacing: 0.06em;
+}
+#meta>div>span.album,#meta>div>span.artist
+{
+    height: 2.5vh;
+    float: left;
+    clear: both;
+    line-height: 2.5vh;
+    font-size: 1.5vh;
     font-weight: 300;
     letter-spacing: 0.07em;
 }
@@ -806,7 +778,7 @@ li:focus
     position:absolute;
     height: 4px;
     margin:-2px 0px;
-    background:#fff;
+    background:#000;
 }
 
 .dragged>#seekBar
