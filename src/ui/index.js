@@ -5,12 +5,13 @@ $('input').keydown(function(e) {
 });
 
 window.onfocus = function() {
-  _drawing = true;
-  window.requestAnimationFrame(draw);
+    _drawing = true;
+    window.requestAnimationFrame(draw);
 }
 window.onblur = function() {
-  _drawing = false;
+    _drawing = false;
 }
+
 function updatePopulation() {
     let xhttp = new XMLHttpRequest();
     xhttp.onload = () => {
@@ -54,8 +55,8 @@ var LibraryObject = (file) => {
     listItem.appendChild(title);
     listItem.appendChild(artist);
     listItem.appendChild(album);
-    listItem.addEventListener('dblclick',function(){
-      $('#playlist .list').append(PlaylistObject(file));
+    listItem.addEventListener('dblclick', function() {
+        $('#playlist .list').append(PlaylistObject(file));
     })
     return listItem;
 }
@@ -68,15 +69,19 @@ var reflectFilePopulation = () => {
 }
 
 var PlaylistObject = (file) => {
-  let $listItem = $('<li/>');
-  $listItem.append($('<span>'+(file.title||file.url.split('/').pop())+'</span>'));
-  $listItem.attr('name', file.url);
-  $listItem.dblclick(function() {
+    if(audio.paused) {
+      audio.src = file.url;
+      audio.currentTime = 0;
+    }
+    let $listItem = $('<li/>');
+    $listItem.append($('<span>' + (file.title || file.url.split('/').pop()) + '</span>'));
+    $listItem.attr('name', file.url);
+    $listItem.dblclick(function() {
         playMySong($(this).attr("name"));
         $('#playlist>.list>li').removeClass('active');
         $(this).addClass('active');
     });
-  return $listItem;
+    return $listItem;
 }
 
 //Visualization
@@ -245,28 +250,28 @@ function draw() {
     let len = Math.round(256 * (audio.currentTime / audio.duration));
     ctx.beginPath();
     for (i = 0; i < len; i++) {
-      j = i + 10;
-      //for seeker
-      ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
-      ctx.globalAlpha = 0.3;
-      ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-      ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
+        j = i + 10;
+        //for seeker
+        ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
+        ctx.globalAlpha = 0.3;
+        ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+        ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
     }
     ctx.closePath();
     ctx.stroke();
     ctx.beginPath();
     for (i = len; i < currentPoints.length; i++) {
-      j = i + 10;
-      ctx.globalAlpha = 0.4;
-      ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)"; 
-      ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
-      ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
+        j = i + 10;
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = "hsl(" + baseColor + ",50%,20%)";
+        ctx.moveTo((visual.w / 2) + currentPoints[i].x, (visual.h / 2) + currentPoints[i].y);
+        ctx.lineTo((visual.w / 2) + (CurrentRad) * Math.cos(deg * j + phase), (visual.h / 2) + (CurrentRad) * Math.sin(deg * j + phase));
     }
     ctx.closePath();
     ctx.stroke();
     ctx.lineWidth = 1.5;
     if (volChange--) {
-      ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
+        ctx.lineWidth = 1.5 + (1.5 * (volChange / 200));
     }
     ctx.strokeStyle = "hsl(" + baseColor + ",100%,60%)";
     ctx.beginPath();
@@ -540,22 +545,25 @@ function genPalette() {
 genPalette();
 Init("Colors.mp3");
 
-function addToPlay() {
+function playFromDrop() {
     var file = document.getElementById('takeNew').files[0];
     var URL = window.URL;
     var fileURL = URL.createObjectURL(file);
-    console.log(fileURL);
-    audio.src = fileURL;
     // From remote host
-    loadTags(file);
-    audio.currentTime = 0;
+    loadTags(file,fileURL);
 }
 
-function loadTags(file) {
+function loadTags(file,fileURL) {
     jsmediatags.read(file, {
         onSuccess: function(tag) {
             console.log(tag);
             curtags = tag;
+            let temp = {};
+            temp.title = tag.tags.title;
+            temp.album = tag.tags.album;
+            temp.artist = tag.tags.artist;
+            temp.url = fileURL;
+            $('#playlist .list').append(PlaylistObject(temp));
             var title = document.getElementById('title');
             var artist = document.getElementById('artist');
             var album = document.getElementById('album');
