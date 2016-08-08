@@ -64,11 +64,20 @@
                     <span id="album" class="album">Passive Me Aggressive You</span>
                     <span id="artist" class="artist">The Naked &amp;Famous</span>
                 </div>
+                <div class="controlFaces">
+                    <li title="Ctrl + Shift + &larr;" class="clickable material-icons" onclick="prevSong()">chevron_left</li>
+                    <li title="Spacebar" class="clickable material-icons playpause" onclick="playPause()">play_arrow</li>
+                    <li title="Ctrl + Shift + &rarr;" class="clickable material-icons" onclick="nextSong()">chevron_right</li>
+                </div>
                 <div class="seekbar">
                     <div class='track'>
                         <div class='progress'></div>
                         <div class='handle'></div>
                     </div>
+                </div>
+                <div class="controlFaces">
+                    <li title="Ctrl + &uarr;&darr;" style="font-size:20px" id="volumeFace" class="clickable material-icons">volume_up</li>
+                    <label for='volumeFace'></label>
                 </div>
             </div>
         </div>

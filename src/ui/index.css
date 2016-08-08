@@ -6,6 +6,8 @@ body {
 * {
     font-family: 'Proxima Nova';
     cursor: default;
+    -webkit-user-select:none;
+    user-select:none;
 }
 
 *:focus
@@ -115,11 +117,12 @@ body {
     width:25vw;
     height: 90vh;
     position: relative;
-    overflow-y: auto;
 }
 #library > ul {
     padding:0px;
     margin-top:10vh;
+    overflow-y: auto;
+    height: 80vh;
 }
 #library > ul > li {
     list-style-type:none;
@@ -311,12 +314,13 @@ li:focus
 }
 
 #playlist>.list>li>span{
-    max-width: 15vw;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
-
+#playlist.active>.list>li>span {
+    max-width: 15vw;
+}
 #playlist>.list>li.active {
     background: #e0e0e0;
     color: #191919;
@@ -529,6 +533,9 @@ li:focus
     z-index: +100;
     overflow: hidden;
     display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding-right: 10px;
     background:#fff;
     color:#000;
     transition: all 0.5s cubic-bezier(0,0,0,1);
@@ -542,33 +549,70 @@ li:focus
     height: 10vh;
     width: 10vh;
     position: relative;
-    margin-right:10px;
     transition:all 0.3s cubic-bezier(0,0,0,1);
 }
 #notseekbar{
     height: 100%;
     display:block;
-    max-width: 20vw;
-    margin:0px 10px;
+    width: calc(25vw - 10vh);
     box-sizing: border-box;
-    padding: 1vh 0px;
+    padding: 1vh 10px 1vh 20px;
+}
+.controlFaces {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+}
+.controlFaces > li {
+    font-size: 5vh;
+    width: 5vh;
+    height:5vh;
+    text-align: center;
+    line-height: 5vh;
+}
+#volumeFace {
+    transition:opacity 0.5s;
+    transition-delay: 1s;
+}
+#volumeFace + label {
+    width: 5vh;
+    height:5vh;
+    color:rgba(80,145,218,0.8);
+    line-height: 5vh;
+    font-size: 0.8em;
+    margin-left: -5vh;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition:opacity 0.5s;
+    transition-delay: 1s;
+}
+#volumeFace.active {
+    opacity: 0.1;
+    transition:opacity 0.2s;
+    transition-delay: 0s;
+}
+#volumeFace.active + label {
+    opacity: 1;
+    transition:opacity 0.2s;
+    transition-delay: 0s;
 }
 .seekbar{
-    height: 100%;
+    height: 20px;
     display:block;
     flex-grow: 1;
     position: relative;
     margin:0px 20px;
+    cursor: pointer;
 }
 .seekbar>.track
 {
     width:100%;
     height:2px;
     top:50%;
-    cursor: pointer;
     position: absolute;
     margin-top:-1px;
-    background-color:rgba(0,0,0,0.4);
+    background:rgba(0,0,0,0.2);
 }
 
 .seekbar>.track>.progress
@@ -580,7 +624,6 @@ li:focus
     background: #000;
     cursor:pointer;
 }
-
 .seekbar>.track>.handle
 {
     width:14px;
@@ -591,11 +634,11 @@ li:focus
     border-radius:50%;
     margin:-7px;
     top:50%;
-    transform: scale(0.7);
+    transform: scale(0);
     transition:transform 0.1s;
 }
 
-.seekbar>.track>.handle
+.seekbar:hover>.track>.handle
 {
     transform: scale(1);
 }

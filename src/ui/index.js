@@ -97,6 +97,7 @@ var flyout = false;
 
 var jsmediatags = window.jsmediatags; //JS media tags library object
 var nowPlaying = document.getElementById('now_playing');
+var volumeFace = document.getElementById('volumeFace');
 var canvas = document.getElementById('canvas');
 var palette = document.getElementById('palette');
 var audio = document.querySelectorAll('audio')[0];
@@ -433,7 +434,7 @@ nowPlaying.getElementsByClassName('overlay')[0].onclick = function () {
 };
 
 function playPause() {
-  if ($(canvas).hasClass('active')) {
+  if (!audio.paused) {
     audio.pause();
     $(canvas).removeClass('active');
   } else {
@@ -445,11 +446,15 @@ function playPause() {
 audio.onpause = function () {
   playIcon.style.display = 'none';
   pauseIcon.style.display = 'block';
+  $('.playpause').html("play_arrow");
 };
 audio.onplay = function () {
   playIcon.style.display = 'block';
+  $('.playpause').html("pause");
   pauseIcon.style.display = 'none';
 };
+audio.onvolumechange = function() {
+}
 audio.onended = nextSong;
 
 function nextSong() {
@@ -474,33 +479,31 @@ function prevSong() {
     fuckitup();
   }
 }
-
+let timer;
 function volumescroll(e) {
-  newVol = gainNode.gain.value + (e.wheelDelta / 2400);
+  clearTimeout(timer);
+  var scrolldelta = e.wheelDelta;
+    if (scrolldelta === undefined) {
+      scrolldelta = -e.detail * 40;
+    }
+  newVol = gainNode.gain.value + (scrolldelta / 2400);
   volChange = 200;
-  //hairoffset=hairoffset+Math.sign(e.wheelDelta)
-  /*wafer = 40000;*/
   gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
+  $('#volumeFace').addClass('active');
+  $('#volumeFace + label').html(Math.round(gainNode.gain.value*100)+'%');
+  setTimeout(function(){
+    $('#volumeFace').removeClass('active'); 
+  },1000);
 }
 
 //workaound for volume change by mouse wheel code for firefox
 var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; //FF doesn't recognize mousewheel as of FF3.x
 if (nowPlaying.attachEvent) { //if IE (and Opera depending on user setting)
-  nowPlaying.attachEvent("on" + mousewheelevt, function (e) {
-    newVol = gainNode.gain.value + (e.wheelDelta / 2400);
-    volChange = 200;
-    gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
-  });
+  nowPlaying.attachEvent("on" + mousewheelevt, volumescroll);
+  volumescroll.attachEvent("on" + mousewheelevt, volumescroll);
 } else if (nowPlaying.addEventListener) { //WC3 browsers
-  nowPlaying.addEventListener(mousewheelevt, function (e) {
-    var scrolldelta = e.wheelDelta;
-    if (scrolldelta === undefined) {
-      scrolldelta = -e.detail * 40;
-    }
-    newVol = gainNode.gain.value + (scrolldelta / 2400);
-    volChange = 200;
-    gainNode.gain.value = newVol < 0 ? 0 : Math.min(newVol, 1);
-  }, false);
+  nowPlaying.addEventListener(mousewheelevt, volumescroll, false);
+  volumeFace.addEventListener(mousewheelevt, volumescroll, false);
 }
 
 //playlist sorting
@@ -607,7 +610,6 @@ audio.onloadeddata = function () {
 document.body.ondragover = function () {
   $('#tray').addClass('active');
 };
-
 document.body.ondrop = function () {
   $('#tray').removeClass('active');
   fuckitup();
@@ -681,7 +683,7 @@ $('.handle').draggable({
   }
 });
 
-$('#meta .seekbar .track').click(function (e) {
+$('#meta .seekbar').click(function (e) {
   var pos = e.pageX - $(this).offset().left;
   $('#meta .seekbar .progress').css({
     width: pos
